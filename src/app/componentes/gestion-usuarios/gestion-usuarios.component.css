@@ -1,0 +1,29 @@
+:host {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: #D8DBE2;
+}
+.btn-cancelar{
+    --bs-btn-color: #ffffff;
+    --bs-btn-bg: #9b9b9b;
+    --bs-btn-hover-color: #ffffff;
+    --bs-btn-hover-bg: #7e7e7e;
+    --bs-btn-active-color: #ffffff;
+    --bs-btn-active-bg: #666666;
+    --bs-btn-active-border-color: #666666;
+
+
+}
+button {
+    --bs-btn-color: #ffffff;
+    --bs-btn-bg: #1ca1b6;
+    --bs-btn-hover-color: #ffffff;
+    --bs-btn-hover-bg: #188c9e;
+    --bs-btn-active-color: #ffffff;
+    --bs-btn-active-bg: #157786;
+    --bs-btn-active-border-color: #157786;
+    --bs-btn-disabled-border-color: #157786;
+    --bs-btn-disabled-color: #ffffff;
+    --bs-btn-disabled-bg: #157786;
+}

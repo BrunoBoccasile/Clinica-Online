@@ -1,0 +1,46 @@
+:host {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: rgb(169, 188, 208);
+    background: linear-gradient(90deg, rgba(169, 188, 208, 1) 0%, rgba(216, 219, 226, 1) 35%, rgba(88, 164, 176, 1) 100%);
+}
+
+button {
+    --bs-btn-color: #ffffff;
+    --bs-btn-bg: #1ca1b6;
+    --bs-btn-hover-color: #ffffff;
+    --bs-btn-hover-bg: #188c9e;
+    --bs-btn-active-color: #ffffff;
+    --bs-btn-active-bg: #157786;
+    --bs-btn-active-border-color: #157786;
+}
+
+#cuenta-registrada {
+    color: rgb(106, 123, 126);
+}
+
+
+#contenedor-2 {
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end; /* Align items to the bottom */
+    overflow: hidden;
+}
+
+#contenedor-2 img {
+    width: 94%;
+    height: auto; 
+    max-height: 100%; 
+    object-fit: contain;
+}
+
+h1{
+    font-size: 6rem;
+}
+
+#btn-crear-cuenta{
+    height: 4rem;
+    font-size: 1.5rem;
+}

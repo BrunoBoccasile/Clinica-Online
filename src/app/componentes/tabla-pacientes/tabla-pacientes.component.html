@@ -1,0 +1,38 @@
+@if(pacientesObtenidos)
+{
+<div class="table-responsive">
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">ID</th>
+                <th scope="col">DNI</th>
+                <th scope="col">Nombre</th>
+                <th scope="col">Apellido</th>
+                <th scope="col">Edad</th>
+                <th scope="col">Obra social</th>
+                <th scope="col">Mail</th>
+
+            </tr>
+        </thead>
+        <tbody class="table-group-divider">
+            @for (paciente of pacientes; track $index){
+
+            <tr>
+                <th scope="row">{{paciente.id}}</th>
+                <td>{{paciente.dni}}</td>
+                <td>{{paciente.nombre}}</td>
+                <td>{{paciente.apellido}}</td>
+                <td>{{paciente.edad}}</td>
+                <td>{{paciente.obraSocial}}</td>
+                <td>{{paciente.mail}}</td>
+            </tr>
+            }
+        </tbody>
+    </table>
+</div>
+}
+@else
+{
+<app-spinner></app-spinner>
+}

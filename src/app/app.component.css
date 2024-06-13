@@ -1,0 +1,31 @@
+#navbar {
+  background-color: #373F51;
+
+}
+
+.container-aplicacion {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+app-navbar {
+  flex: 0 0 auto;
+}
+
+.container-contenido {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+}
+
+button {
+  --bs-btn-color: #188c9e;
+  --bs-btn-bg: #ffffff00;
+  --bs-btn-border-color: #188c9e;
+  --bs-btn-hover-color: #ffffff;
+  --bs-btn-hover-bg: #188c9e;
+  --bs-btn-active-color: #ffffff;
+  --bs-btn-active-bg: #157786;
+  --bs-btn-active-border-color: #157786;
+}

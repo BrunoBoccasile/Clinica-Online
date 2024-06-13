@@ -1,0 +1,40 @@
+@if(especialistasObtenidos)
+{
+    <div class="table-responsive">
+    <table class="table table-striped">
+    <thead>
+        <tr>
+            <th scope="col">ID</th>
+            <th scope="col">DNI</th>
+            <th scope="col">Nombre</th>
+            <th scope="col">Apellido</th>
+            <th scope="col">Edad</th>
+            <th scope="col">Especialista</th>
+            <th scope="col">Mail</th>
+            <th scope="col">Estado</th>
+        </tr>
+    </thead>
+    <tbody class="table-group-divider">
+        @for (especialista of especialistas; track $index){
+            @if(especialista.id)
+            {
+                <tr (click)="enviarId(especialista.id)">
+                    <th scope="row">{{especialista.id}}</th>
+                    <td>{{especialista.dni}}</td>
+                    <td>{{especialista.nombre}}</td>
+                    <td>{{especialista.apellido}}</td>
+                    <td>{{especialista.edad}}</td>
+                    <td>{{especialista.especialidad}}</td>
+                    <td>{{especialista.mail}}</td>
+                    <td>{{especialista.estado}}</td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+</div>
+}
+@else
+{
+<app-spinner></app-spinner>
+}

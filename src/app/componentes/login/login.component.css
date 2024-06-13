@@ -1,0 +1,36 @@
+:host {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: #D8DBE2;
+}
+
+#btn-login {
+    --bs-btn-color: #ffffff;
+    --bs-btn-bg: #1ca1b6;
+    --bs-btn-hover-color: #ffffff;
+    --bs-btn-hover-bg: #188c9e;
+    --bs-btn-active-color: #ffffff;
+    --bs-btn-active-bg: #157786;
+    --bs-btn-active-border-color: #157786;
+    --bs-btn-disabled-border-color: #157786;
+    --bs-btn-disabled-color: #ffffff;
+    --bs-btn-disabled-bg: #157786;
+}
+.botones-grupo{
+    --bs-btn-color: #1f1f1f;
+    --bs-btn-bg: #61d8eb;
+    --bs-btn-border-color: #188c9e;
+
+    --bs-btn-hover-color:  #1f1f1f;
+    --bs-btn-hover-bg: rgb(70, 176, 192);
+    --bs-btn-hover-border: #188c9e;
+
+    --bs-btn-active-color: #1f1f1f;
+    --bs-btn-active-bg:  rgb(44, 149, 165);
+    --bs-btn-active-border-color: #188c9e;
+}
+
+.ng-invalid:not(form)  {
+    border-right: 5px solid hsl(0, 100%, 62%); /* red */
+  }
