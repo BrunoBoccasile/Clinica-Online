@@ -1,0 +1,36 @@
+@if(administradoresObtenidos)
+{
+    <div class="table-responsive">
+    <table class="table table-striped">
+    <thead>
+        <tr>
+            <th scope="col">DNI</th>
+            <th scope="col">Nombre</th>
+            <th scope="col">Apellido</th>
+            <th scope="col">Edad</th>
+            <th scope="col">Mail</th>
+            <th scope="col">Imagen</th>
+        </tr>
+    </thead>
+    <tbody class="table-group-divider">
+        @for (administrador of administradores; track $index){
+            @if(administrador.id)
+            {
+                <tr (click)="enviarId(administrador.id)">
+                    <th scope="row">{{administrador.dni}}</th>
+                    <td>{{administrador.nombre}}</td>
+                    <td>{{administrador.apellido}}</td>
+                    <td>{{administrador.edad}}</td>
+                    <td>{{administrador.mail}}</td>
+                    <td></td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+</div>
+}
+@else
+{
+<app-spinner></app-spinner>
+}

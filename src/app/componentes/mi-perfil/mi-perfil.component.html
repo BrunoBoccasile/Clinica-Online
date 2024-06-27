@@ -1,0 +1,226 @@
+@if(usuarioActual != undefined)
+{
+
+
+<div class="container d-flex flex-column p-4">
+    <div class="card col-12 my-4">
+        <div class="row g-0">
+            <div class="col-md-4">
+                @if (imagenActual != "")
+                {
+                <img src={{imagenActual}} class="img-fluid rounded-start" alt="...">
+                }
+                @else {
+                <app-spinner></app-spinner>
+                }
+            </div>
+            <div class="col-md-8">
+                <div class="card-body">
+
+                    <h1 class="card-title display-6"><strong>{{usuarioActual.nombre}}
+                            {{usuarioActual.apellido}}</strong></h1>
+                    <ul class="list-group list-group-flush">
+                        <h3 class="list-group-item"><strong>DNI: </strong>{{usuarioActual.dni}}</h3>
+                        <h3 class="list-group-item"><strong>Edad: </strong>{{usuarioActual.edad}}</h3>
+                        <h3 class="list-group-item"><strong>Mail: </strong>{{usuarioActual.mail}}</h3>
+                        <h3 class="list-group-item" *ngIf="authService.tipoUsuario == 'paciente'"><strong>Obra
+                                social:</strong>{{usuarioActual.obraSocial}}</h3>
+                        <h3 class="list-group-item" *ngIf="authService.tipoUsuario == 'especialista'">
+                            <strong>Especialidades: </strong>{{usuarioActual.especialidades | arrayToStringPipe:
+                            'nombre'}}
+                        </h3>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    @if(authService.tipoUsuario == "paciente"){
+    <div class="card mt-1 col-3 mx-auto">
+        <img src={{imagenActual2}} class="card-img-top" *ngIf="imagenActual2 !=''">
+        <app-spinner *ngIf="imagenActual2 ==''"></app-spinner>
+        <div class="card-body">
+            <h5 class="card-title">Segunda imagen</h5>
+        </div>
+    </div>
+    }
+    @if(authService.tipoUsuario == "especialista"){
+    <div class="card my-4 col-md-4 col-10 mx-auto">
+        <div class="card-body d-flex flex-column align-items-center justify-content-center">
+            <h1 class="card-title">Acciones</h1>
+            <button class="btn btn-lg my-2 btn-ok" (click)="mostrarModalCargarDisponibilidad()">Cargar
+                disponibilidad</button>
+            <button class="btn btn-lg my-2 btn-ok" (click)="mostrarModalAgregarEspecialidad()">Agregar
+                especialidad</button>
+        </div>
+    </div>
+    }
+</div>
+
+
+<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" #modalCargarDisponibilidad
+    data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="staticBackdropLabel">Cargar disponibilidad</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="formDisponibilidad" (ngSubmit)="enviarFormDisponibilidad()">
+
+                    <label class="form-label" for="especialidad">Especialidad</label>
+                    <select class="form-select mb-2" id="especialidad" formControlName="especialidad">
+                        @for (especialidad of usuarioActual.especialidades; track $index)
+                        {
+                        <option value={{especialidad.nombre}}>{{especialidad.nombre}}</option>
+                        }
+                    </select>
+
+                    <label class="form-label" for="dia">Día</label>
+                    <select class="form-select mb-2" id="dia" formControlName="dia">
+                        @for (dia of dias; track $index)
+                        {
+                        <option value={{dia}}>{{dia}}</option>
+                        }
+                    </select>
+
+                    <label class="form-label" for="horaInicio">Horario de inicio</label>
+                    <select class="form-select mb-2" id="horaInicio" formControlName="horaInicio">
+                        @for (hora of horarios; track $index)
+                        {
+                            @if(dia?.value != "Sábado" || (dia?.value == "Sábado" && hora <= 810))
+                            {
+                                @if(hora != 1140)
+                                {
+                                    <option value={{hora}}>{{hora | minutosAHoraPipe}}</option>
+                                }
+                            }
+                        }
+                    </select>
+
+
+                    <label class="form-label" for="horaFin">Horario de fin</label>
+                    <select class="form-select mb-2" id="horaFin" formControlName="horaFin" [disabled]="true">
+                        @for (hora of horarios; track $index)
+                        {
+                            @if(dia?.value != "Sábado" || (dia?.value == "Sábado" && hora <= 840))
+                            {
+                                @if(hora > horaInicio?.value)
+                                {
+                                    <option value={{hora}}>{{hora | minutosAHoraPipe}}</option>
+                                }
+                            }
+                        }
+                    </select>
+                    <label class="form-label" for="duracion">Duración de turno</label>
+                    <div class="input-group">
+                        <input type="number" class="form-control" id="duracion" formControlName="duracion">
+                        <span class="input-group-text" id="basic-addon2">Minutos</span>
+                    </div>
+                    @if(duracion?.hasError('min'))
+                    {
+                    <ng-container>
+                        <small class="text-danger">El mínimo de cada turno es de 30 minutos</small>
+                    </ng-container>
+                    }
+                    @else if (duracion?.hasError('max'))
+                    {
+                    <ng-container>
+                        <small class="text-danger">El máximo de cada turno es des 120 minutos</small>
+                    </ng-container>
+                    }
+                    <div class="modal-footer">
+                        <button class="btn btn-ok" [disabled]="formDisponibilidad.invalid" type="submit">Cargar disponibilidad</button>
+                    </div>
+                </form>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" #modalAgregarEspecialidad data-bs-keyboard="false"
+    tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="staticBackdropLabel">Agregar especialidad</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                @if(especialidadesObtenidas)
+                {
+
+                <ul class="list-group mb-3" id="lista-especialidades">
+                    @for (especialidad of especialidades; track $index)
+                    {
+
+                    <li class="list-group-item d-flex justify-content-between lh-sm"
+                        (click)="seleccionarEspecialidad(especialidad.nombre)">
+                        <div>
+                            <h6 class="my-0">{{especialidad.nombre}}</h6>
+                        </div>
+                    </li>
+                    }
+                </ul>
+                }
+                @else
+                {
+                <app-spinner></app-spinner>
+                }
+                <button class="btn w-100 btn-ok" data-bs-toggle="modal"
+                    data-bs-target="#modalAnadirEspecialidad">Crear nueva especialidad</button>
+            </div>
+            <div class="modal-footer d-flex flex-md-row">
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Seleccione una"
+                        ngModel={{especialidadSeleccionada}} readonly>
+                    <button class="btn w-25 btn-ok" (click)="agregarEspecialidad()" [disabled]="especialidadSeleccionada == ''">Agregar</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="modalAnadirEspecialidad" tabindex="-1" aria-labelledby="modalAnadirEspecialidad"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="modalAnadirEspecialidad">Nueva especialidad</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form [formGroup]="formEspecialidad" (ngSubmit)="enviarFormEspecialidad()">
+                <div class="modal-body">
+                    Ingrese el nombre de la nueva especialidad a añadir
+                    <input type="text" class="form-control" id="nombreEspecialidad" formControlName="nombre">
+                    @if(nombreEspecialidad?.hasError('pattern'))
+                    {
+                    <ng-container>
+                        <small class="text-danger">Debe estar compuesto sólo por letras (no más de 50)</small>
+                    </ng-container>
+                    }
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-cancelar" data-bs-dismiss="modal"
+                        (click)="mostrarModalAgregarEspecialidad()">Cancelar</button>
+                    <button type="button" class="btn btn-ok" data-bs-dismiss="modal"
+                        [disabled]="formEspecialidad.invalid" type="submit"
+                        (click)="mostrarModalAgregarEspecialidad()">Crear</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+}
+@else {
+<app-spinner></app-spinner>
+}

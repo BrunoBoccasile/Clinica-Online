@@ -1,6 +1,8 @@
 .table-responsive {
-    overflow-x: auto;
-    max-height: 300px; 
-    
+    overflow-x: auto;    
     overflow-y: auto; 
+}
+
+.max-height{
+    max-height: 200px;
 }

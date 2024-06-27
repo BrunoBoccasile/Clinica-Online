@@ -2,7 +2,8 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    background: #D8DBE2;
+    background: rgb(88,164,176);
+    background: linear-gradient(90deg, rgba(88,164,176,1) 0%, rgba(216,219,226,1) 35%, rgba(163,240,153,1) 100%);
 }
 
 button {
@@ -39,4 +40,49 @@ label {
 
 .ng-invalid:not(form)  {
     border-left: 5px solid hsl(0, 100%, 62%); /* red */
+  }
+
+  .btn-paciente-grande, .btn-doctor-grande{
+    border: none;
+    border-radius: 15px; 
+    padding: 1rem; 
+    cursor: pointer;  
+  }
+
+  .btn-paciente{
+    background-color: #328354;
+  }
+
+  .btn-doctor{
+    background-color: #944cc4;
+  }
+
+
+  .btn-paciente-mediano, .btn-doctor-mediano{
+    border: none;
+    border-radius: 15px; 
+    padding: 1rem; 
+    cursor: pointer;  
+    width: 200px;
+    height: 200px;
+
+    img{
+        width: 100%;
+    }
+    
+  }
+
+  
+  .btn-paciente-chico, .btn-doctor-chico{
+    border: none;
+    border-radius: 15px; 
+    padding: 1rem; 
+    cursor: pointer;  
+    width: 175px;
+    height: 175px;
+
+    img{
+        width: 100%;
+    }
+    
   }

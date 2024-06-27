@@ -2,7 +2,13 @@ import { Injectable } from '@angular/core';
 import { initializeApp } from '@angular/fire/app';
 import { Auth, createUserWithEmailAndPassword, getAuth, onAuthStateChanged, sendEmailVerification, signInWithEmailAndPassword, signOut } from '@angular/fire/auth';
 import { addDoc, collection } from '@angular/fire/firestore';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Subscription } from 'rxjs';
+import { Administrador } from '../entidades/administrador';
+import { AdministradoresService } from './administradores.service';
+import { PacientesService } from './pacientes.service';
+import { EspecialistasService } from './especialistas.service';
+import { Paciente } from '../entidades/paciente';
+import { Especialista } from '../entidades/especialista';
 
 @Injectable({
   providedIn: 'root'
@@ -15,12 +21,12 @@ export class AuthService
   public errorLogin: boolean = false;
   public mensajeErrorLogin: string = "";
   public isLoggedIn: boolean = false;
-  public firebaseInicializado: boolean;
+  public firebaseInicializado: boolean = false;
+  public tipoUsuario: string = "";
 
-  private secondaryApp: any;
-  constructor(public auth: Auth)
+  public secondaryApp: any;
+  constructor(public auth: Auth, public administradoresService: AdministradoresService, public pacientesService: PacientesService, public especialistasService: EspecialistasService)
   {
-    this.firebaseInicializado = false;
     this.auth.authStateReady().then(() =>
     {
       // Firebase está inicializado y listo para usar
@@ -34,23 +40,81 @@ export class AuthService
     };
     this.secondaryApp = initializeApp(secondaryAppConfig, 'Secondary');
     
+
+
+    //verifico el tipo de usuario
+    onAuthStateChanged(this.auth, (user) => {
+      if (user) {
+        if(user.email)
+          {
+                this.administradoresService.esAdmin(user.email).then(isAdmin => {
+                  if(isAdmin)
+                    {
+                      this.tipoUsuario = "administrador";
+                    }
+                })
+  
+                this.pacientesService.esPaciente(user.email).then(isPaciente => {
+                  if(isPaciente)
+                    {
+                      this.tipoUsuario = "paciente";
+                    }
+                })
+
+                this.especialistasService.esEspecialista(user.email).then(isEspecialista => {
+                  if(isEspecialista)
+                    {
+                      this.tipoUsuario = "especialista";
+                    }
+                })
+          }
+          else
+          {
+            this.tipoUsuario = "";
+          }
+      } 
+    });
   }
+
+
+
+
 
   authStateReady(): Promise<void>
   {
     return this.auth.authStateReady();
   }
 
-  registerAdmin(email: string, password: string)
+  registerSinLogin(email: string, password: string)
   {
-    return createUserWithEmailAndPassword(getAuth(this.secondaryApp), email, password);
+    const auth = getAuth(this.secondaryApp);
+
+    if(auth.currentUser)
+      {
+        return signOut(auth)
+          .catch(() => {
+            // Ignorar el error de signOut y proceder con la creación del usuario
+          })
+          .then(() => {
+            return createUserWithEmailAndPassword(auth, email, password);
+          })
+          .catch(error => {
+            // Manejar el error de createUserWithEmailAndPassword si ocurre
+            throw error;
+          });
+      }
+      else{
+        return createUserWithEmailAndPassword(auth, email, password);
+
+      }
+
+    
   }
 
   register(email: string, password: string)
   {
     return createUserWithEmailAndPassword(this.auth, email, password);
   }
-
 
 
   logIn(userMail: string, userPassword: string)
@@ -62,7 +126,7 @@ export class AuthService
   {
     signOut(this.auth).then(() =>
     {
-      console.log("User signed out:", this.auth.currentUser?.email);
+      this.tipoUsuario = "";
     });
   }
 

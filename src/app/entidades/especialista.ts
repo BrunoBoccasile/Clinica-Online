@@ -6,7 +6,7 @@ export interface Especialista{
     nombre: string,
     apellido: string,
     edad: number,
-    especialidad: string,
+    especialidades: Array<Especialidad>,
     mail: string,
     password: string
     estado?: string

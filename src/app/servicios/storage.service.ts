@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Storage, ref, uploadBytes } from '@angular/fire/storage';
+import { Storage, getDownloadURL, ref, uploadBytes } from '@angular/fire/storage';
 
 @Injectable({
   providedIn: 'root'
@@ -15,4 +15,12 @@ export class StorageService {
 
     return uploadBytes(imgRef, file);
   }
+
+  obtenerImagen(imagePath: string): Promise<string | null> {
+    const storageRef = ref(this.storage, imagePath);
+    return getDownloadURL(storageRef);
+  }
+  
+
+
 }

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Firestore, addDoc, collection, collectionData, deleteDoc, doc } from '@angular/fire/firestore';
+import { Firestore, addDoc, collection, collectionData, deleteDoc, doc, getDoc, getDocs, query, where } from '@angular/fire/firestore';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { Paciente } from '../entidades/paciente';
 
@@ -45,6 +45,45 @@ export class PacientesService {
     });
   }
 
+  obtenerPacientePorId(id: string) {
+    const pacienteDocRef = doc(this.firestore, `pacientes/${id}`);
+    return getDoc(pacienteDocRef).then(doc => {
+      if (doc.exists()) {
+        return {
+          id: doc.id,
+          ...doc.data()
+        } as Paciente;
+      } else {
+        console.log('No existe el documento');
+        return null;
+      }
+    }).catch(error => {
+      console.error('Error al obtener el paciente por ID: ', error);
+      return null;
+    });
+  }
+
+  obtenerPacientePorEmail(email: string): Promise<Paciente | null> {
+    const pacientesColRef = collection(this.firestore, 'pacientes');
+    const q = query(pacientesColRef, where('mail', '==', email));
+
+    return getDocs(q).then(querySnapshot => {
+      if (!querySnapshot.empty) {
+        const doc = querySnapshot.docs[0];
+        return {
+          id: doc.id,
+          ...doc.data()
+        } as Paciente;
+      } else {
+        console.log('No existe el documento');
+        return null;
+      }
+    }).catch(error => {
+      console.error('Error al obtener el paciente por email: ', error);
+      return null;
+    });
+  }
+
   obtenerPacientes()
   {
     let col = collection(this.firestore, 'pacientes');
@@ -64,6 +103,24 @@ export class PacientesService {
       console.log('Paciente eliminado con éxito');
     }).catch(error => {
       console.error('Error al eliminar el paciente: ', error);
+    });
+  }
+
+  esPaciente(email: string): Promise<boolean>
+  {
+    return new Promise((resolve, reject) => {
+      const q = query(collection(this.firestore, "pacientes"), where("mail", "==", email));
+      getDocs(q).then((querySnapshot) =>
+        {
+        let esPaciente = false;
+        querySnapshot.forEach((doc) =>
+        {
+          esPaciente = true;
+        });
+        resolve(esPaciente);
+      }).catch(error => {
+        reject(error);
+      });
     });
   }
 }

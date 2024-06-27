@@ -1,55 +1,77 @@
 @if(authService.firebaseInicializado)
 {
-<div class="container">
+<div class="h-100 d-flex flex-column flex-md-row">
   @if (!authService.auth.currentUser)
   {
-  <div class="py-5 text-center">
-    <h1 class="display-1">Iniciar sesión</h1>
-    </div>
-        <div class="d-flex flex-column justify-content-center align-items-center">
-          <h5 class="mt-4">Por favor, ingrese sus credenciales para iniciar sesión en el sistema:</h5>
-          <form class="col-12" [formGroup]="formLogin" (ngSubmit)="iniciarSesion()">
-            <div class="d-flex col-12 flex-column align-items-center">
-                <div class="col-md-6 col-12 mt-4">
-                    <div class="input-group mb-3 input-group-lg">
-                        <span class="input-group-text" id="basic-addon1"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-fill" viewBox="0 0 16 16">
-                            <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6"/>
-                          </svg></span>
-                        <input type="text" class="form-control" placeholder="Correo electrónico"  aria-describedby="basic-addon1" class="form-control" id="user" formControlName="user">
-                      </div>
-                </div>
-                <div class="col-md-6 col-12">
-                    <div class="input-group mb-3 input-group-lg">
-                        <span class="input-group-text" id="basic-addon1"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-lock-fill" viewBox="0 0 16 16">
-                            <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2m3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2"/>
-                          </svg></span>
-                        <input type="password" class="form-control" placeholder="Contraseña"  aria-describedby="basic-addon1" class="form-control" id="password" formControlName="password">
-                      </div>
-                </div>
-                <div class="d-grid gap-2 col-md-6 col-12 mx-auto">
-                  <button class="btn btn-lg" type="submit" [disabled]="formLogin.invalid" id="btn-login">Iniciar sesión</button>
-                  </div>
-                  <div class="col-md-6 col-12 mx-auto d-flex align-items-center flex-column mt-4">
-                    <h4 class="mt-4">Acceso rápido</h4>
-                    <div class="btn-group col-12" role="group" aria-label="Basic outlined example">
-                      <button type="button" class="btn col-4 botones-grupo" (click)="accesoRapido('paciente')">Paciente</button>
-                      <button type="button" class="btn col-4 botones-grupo" (click)="accesoRapido('especialista')">Especialista</button>
-                      <button type="button" class="btn col-4 botones-grupo" (click)="accesoRapido('administrador')">Administrador</button>
-                    </div>
-                  </div>
-            </div>
-          </form>
+  <div class="col-0 col-md-3"></div>
 
+  <div class="col-12 col-md-6">
+    <div class="py-5 text-center">
+      <h1 class="display-1">Iniciar sesión</h1>
+    </div>
+    <div class="d-flex flex-column justify-content-center align-items-center">
+      <h5 class="mt-4">Por favor, ingrese sus credenciales para iniciar sesión en el sistema:</h5>
+      <form class="col-12" [formGroup]="formLogin" (ngSubmit)="iniciarSesion()">
+        <div class="d-flex col-12 flex-column align-items-center">
+          <div class="col-md-6 col-12 mt-4">
+            <div class="input-group mb-3 input-group-lg">
+              <span class="input-group-text" id="basic-addon1"><svg xmlns="http://www.w3.org/2000/svg" width="16"
+                  height="16" fill="currentColor" class="bi bi-person-fill" viewBox="0 0 16 16">
+                  <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6" />
+                </svg></span>
+              <input type="text" class="form-control" placeholder="Correo electrónico" aria-describedby="basic-addon1"
+                class="form-control" id="user" formControlName="user">
+            </div>
+          </div>
+          <div class="col-md-6 col-12">
+            <div class="input-group mb-3 input-group-lg">
+              <span class="input-group-text" id="basic-addon1"><svg xmlns="http://www.w3.org/2000/svg" width="16"
+                  height="16" fill="currentColor" class="bi bi-lock-fill" viewBox="0 0 16 16">
+                  <path
+                    d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2m3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2" />
+                </svg></span>
+              <input type="password" class="form-control" placeholder="Contraseña" aria-describedby="basic-addon1"
+                class="form-control" id="password" formControlName="password">
+            </div>
+          </div>
+          <div class="d-grid gap-2 col-md-6 col-12 mx-auto">
+            <button class="btn btn-lg" type="submit" [disabled]="formLogin.invalid" id="btn-login">Iniciar
+              sesión</button>
+          </div>
         </div>
+      </form>
+
+    </div>
+
+  </div>
+
+  <div class="col-12 col-md-3">
+    <div class="card m-4">
+      <h4 class="text-center"><strong>Accesos rápidos</strong></h4>
+    </div>
+    <div class="col-md-6 col-12 mx-auto d-flex align-items-center flex-wrap flex-md-column">
+      @if(imagenesBotonesObtenidas == true)
+      {
+      @for (usuario of usuariosRapidos; track $index;)
+      {
+        <button class="btn-acceso-rapido m-2" (click)="accesoRapido(usuario)" type="button" data-bs-toggle="tooltip" data-bs-placement="top" title={{usuario.tipo}}><img src={{usuario.imagePath}}></button>
       }
-      @else {
-        <div class="py-5 text-center">
-          <h1>Ya estas logeado</h1>
-      </div>
       }
     </div>
-    }
-    @else 
-    {
-      <app-spinner></app-spinner>
-    }
+  </div>
+  }
+  @else {
+    <div class="py-5 text-center mx-auto">
+      <h1 class="display-1">Usted ya está logeado</h1>
+      <h1><strong>{{this.authService.auth.currentUser.email}}</strong></h1>
+      <button class="btn-logout btn w-50 mx-auto mt-4 btn-lg" (click)="authService.LogOut()">
+        Cerrar sesión
+      </button>
+  </div>
+  }
+</div>
+}
+@else
+{
+<app-spinner></app-spinner>
+}

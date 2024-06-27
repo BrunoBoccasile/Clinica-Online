@@ -1,0 +1,69 @@
+<!-- ■ Especialidad
+■ Especialista
+■ Día y horario del turno.
+● El paciente debe tener la posibilidad de elegir turno dentro de los
+próximos 15 días.
+● Estas fechas tienen que estar relacionadas al especialista
+seleccionado y su disponibilidad horaria.
+● NO UTILIZAR Datepicker
+■ En el caso del administrador, deberá marcar el Paciente. -->
+<div class="container">
+    <h1 class="display-1">Solicitar turno</h1>
+
+  <div class="card p-4">
+    <div class="d-flex flex-row">
+      <div class="container-0">
+        <h2>Seleccione una especialidad</h2>
+        <form [formGroup]="formTurno" (ngSubmit)="nada()">
+        @if(especialidadesObtenidas)
+        {
+            <select class="form-select mb-2" id="especialidad" formControlName="especialidad" (ngModelChange)="especialistaSeleccionado = false">
+                @for (especialidad of especialidades; track $index)
+                {
+                <option value={{especialidad.nombre}}>{{especialidad.nombre}}</option>
+                }
+            </select>
+          }
+          @else {
+            <app-spinner></app-spinner>
+          }
+          
+        </form>
+        <h2>Lista de especialistas</h2>
+        <div class="card my-4 card-especialistas">
+          @if(especialidad?.value != "")
+          {
+            <div class="card-body">
+              <h6 class="card-subtitle mb-2 text-muted">Seleccione uno</h6>
+              <app-tabla-especialistas [tipoVista]="0" [maxHeight]="500" [nombreEspecialidad]="especialidad?.value" (onEnviarId)="recibirIdEspecialista($event)"></app-tabla-especialistas>
+            </div>
+          }
+          @else 
+          {
+            <h5 class="text-center">Seleccione una especialidad para listar los especialistas correspondientes</h5>
+          }
+          </div>
+      </div>
+      <div class="container-1">
+        <h2>Turnos disponibles</h2>
+        @if (especialistaSeleccionado)
+         {
+          <h5>{{especialistaSeleccionado.nombre + " " + especialistaSeleccionado.apellido}}</h5>
+
+          @for (espe of especialistaSeleccionado.especialidades; track $index) 
+          {
+            @if(espe.nombre == especialidad?.value)
+            {
+
+            }
+          }
+         }
+         @else {
+          <h5>Seleccione un especialista para ver sus turnos disponbiles.</h5>
+         }
+      </div>
+    </div>
+  </div>
+
+
+</div>

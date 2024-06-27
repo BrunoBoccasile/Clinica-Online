@@ -1,33 +1,35 @@
 @if(especialistasObtenidos)
 {
-    <div class="table-responsive">
+    <div [ngStyle]="{'max-height.px': maxHeight}" class="table-responsive">
     <table class="table table-striped">
     <thead>
         <tr>
-            <th scope="col">ID</th>
-            <th scope="col">DNI</th>
-            <th scope="col">Nombre</th>
+            <th scope="col" *ngIf="tipoVista == 1">DNI</th>
+            <th scope="col" >Nombre</th>
             <th scope="col">Apellido</th>
-            <th scope="col">Edad</th>
-            <th scope="col">Especialista</th>
-            <th scope="col">Mail</th>
-            <th scope="col">Estado</th>
+            <th scope="col" *ngIf="tipoVista == 1">Edad</th>
+            <th scope="col">Especialidades</th>
+            <th scope="col" *ngIf="tipoVista == 1">Mail</th>
+            <th scope="col" *ngIf="tipoVista == 1">Estado</th>
         </tr>
     </thead>
     <tbody class="table-group-divider">
         @for (especialista of especialistas; track $index){
             @if(especialista.id)
             {
-                <tr (click)="enviarId(especialista.id)">
-                    <th scope="row">{{especialista.id}}</th>
-                    <td>{{especialista.dni}}</td>
-                    <td>{{especialista.nombre}}</td>
-                    <td>{{especialista.apellido}}</td>
-                    <td>{{especialista.edad}}</td>
-                    <td>{{especialista.especialidad}}</td>
-                    <td>{{especialista.mail}}</td>
-                    <td>{{especialista.estado}}</td>
-                </tr>
+                @if(nombreEspecialidad != null && this.tieneEspecialidad(especialista, nombreEspecialidad) || nombreEspecialidad == null)
+                {
+                    <tr (click)="enviarId(especialista.id)">
+                        <th scope="row" *ngIf="tipoVista == 1">{{especialista.dni}}</th>
+                        <td>{{especialista.nombre}}</td>
+                        <td>{{especialista.apellido}}</td>
+                        <td *ngIf="tipoVista == 1">{{especialista.edad}}</td>
+                        <td>{{especialista.especialidades | arrayToStringPipe: 'nombre'}}</td>
+                        <td *ngIf="tipoVista == 1">{{especialista.mail}}</td>
+                        <td *ngIf="tipoVista == 1">{{especialista.estado}}</td>
+                        <td></td>
+                    </tr>
+                }
             }
         }
     </tbody>

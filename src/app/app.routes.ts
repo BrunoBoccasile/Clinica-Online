@@ -1,4 +1,7 @@
 import { Routes } from '@angular/router';
+import { adminGuardGuard } from './guards/admin-guard.guard';
+import { pacienteGuardGuard } from './guards/paciente-guard.guard';
+import { logeadoGuardGuard } from './guards/logeado-guard.guard';
 
 export const routes: Routes = [
     { path: '', redirectTo: '/bienvenida', pathMatch: "full" },
@@ -16,6 +19,17 @@ export const routes: Routes = [
     },
     {
         path: 'gestion-usuarios',
-        loadComponent: () => import('./componentes/gestion-usuarios/gestion-usuarios.component').then(m => m.GestionUsuariosComponent)
-    }
+        loadComponent: () => import('./componentes/gestion-usuarios/gestion-usuarios.component').then(m => m.GestionUsuariosComponent),
+        canActivate: [adminGuardGuard]
+    },
+    {
+        path: 'turnos/solicitar',
+        loadComponent: () => import('./componentes/solicitar-turno/solicitar-turno.component').then(m => m.SolicitarTurnoComponent),
+        // canActivate: [pacienteGuardGuard]
+    },
+    {
+        path: 'mi-perfil',
+        loadComponent: () => import('./componentes/mi-perfil/mi-perfil.component').then(m => m.MiPerfilComponent),
+        canActivate: [logeadoGuardGuard]
+    },
 ];

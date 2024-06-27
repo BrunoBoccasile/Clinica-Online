@@ -26,6 +26,18 @@ export class SweetAlert{
       });
     }
 
+    public mostrarMensajeWarning(titulo: string, mensaje: string)
+    {
+      Swal.fire({
+        title: titulo,
+        text: mensaje,
+        icon: "warning",
+        confirmButtonText: "Ok",
+        allowOutsideClick: false,
+        allowEscapeKey: false
+      });
+    }
+
     public mostrarMensajeExitoYNavegar(titulo: string, mensaje: string, ruta: string)
     {
       Swal.fire({

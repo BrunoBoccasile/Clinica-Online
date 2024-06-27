@@ -39,10 +39,11 @@ export class RegistroComponent implements OnInit
   eventoImagen1: any;
   eventoImagen2: any;
   eventoImagenEsp: any;
+  
   swal: SweetAlert = new SweetAlert(this.router);
   constructor( private fb: FormBuilder, public especialidadesService: EspecialidadesService, public storage: Storage, public pacientesService: PacientesService, public especialistasService: EspecialistasService, public authService: AuthService, public storageService: StorageService, public router: Router)
   {
-    this.tipoRegistro = "paciente";
+    this.tipoRegistro = "";
     this.especialidades = [];
     this.especialidadesObtenidas = false;
     this.limpiarEventosImagen();
@@ -128,25 +129,31 @@ export class RegistroComponent implements OnInit
   {
     if (this.formEspecialista.valid)
       {
+        
+
         let especialista: Especialista = {
           dni: this.dniEspecialista?.value,
           nombre: this.nombreEspecialista?.value,
           apellido: this.apellidoEspecialista?.value,
           edad: this.edadEspecialista?.value,
-          especialidad: this.especialidadEspecialista?.value,
+          especialidades: [
+            {
+              nombre: this.especialidadEspecialista?.value
+            }
+          ],
           mail: this.mailEspecialista?.value,
           password: this.passwordEspecialista?.value
         };
   
         // Registro del usuario
-        this.authService.register(especialista.mail, especialista.password).then(response =>
+        this.authService.registerSinLogin(especialista.mail, especialista.password).then(response =>
         {
           console.log(response);
           this.swal.mostrarMensajeExitoYNavegar("Cuenta creada con exito", "A continuación, debe verificar su mail y esperar que un administrador apruebe su cuenta. Revise su bandeja de entrada.", "bienvenida");
   
           // Enviar verificación de mail
           const auth = getAuth();
-          sendEmailVerification(auth.currentUser!).then(() =>
+          sendEmailVerification(getAuth(this.authService.secondaryApp).currentUser!).then(() =>
           {
             console.log('Verificacion de email enviada');
           }).catch(error =>
@@ -195,23 +202,26 @@ export class RegistroComponent implements OnInit
       };
 
       // Registro del usuario
-      this.authService.register(paciente.mail, paciente.password).then(response =>
+      this.authService.registerSinLogin(paciente.mail, paciente.password).then(response =>
       {
         console.log(response);
         this.swal.mostrarMensajeExitoYNavegar("Cuenta creada con exito", "A continuación, debe verificar su mail. Revise su bandeja de entrada.", "bienvenida");
-
+        
         // Enviar verificación de mail
         const auth = getAuth();
-        sendEmailVerification(auth.currentUser!).then(() =>
-        {
-          console.log('Verificacion de email enviada');
-        }).catch(error =>
-        {
-          console.log('Error enviando la verificacion de email:', error);
-        });
+        sendEmailVerification(getAuth(this.authService.secondaryApp).currentUser!).then(() =>
+          {
+            console.log('Verificacion de email enviada');
+            this.authService.LogOut();
+          }).catch(error =>
+            {
+              console.log('Error enviando la verificacion de email:', error);
+              this.authService.LogOut();
 
-        // Subir imágenes a Firebase Storage
-        const promesasUpload = [];
+            });
+            
+            // Subir imágenes a Firebase Storage
+            const promesasUpload = [];
         promesasUpload.push(this.storageService.subirImagen(this.eventoImagen1, 'pacientes/' + paciente.mail + '/1'));
         promesasUpload.push(this.storageService.subirImagen(this.eventoImagen2, 'pacientes/' + paciente.mail + '/2'));
 
