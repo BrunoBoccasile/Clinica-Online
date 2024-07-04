@@ -7,11 +7,12 @@ import '../../clases/sweetAlert';
 import { SweetAlert } from '../../clases/sweetAlert';
 import { SpinnerComponent } from '../spinner/spinner.component';
 import { StorageService } from '../../servicios/storage.service';
+import { NgClass } from '@angular/common';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [ReactiveFormsModule, SpinnerComponent],
+  imports: [ReactiveFormsModule, SpinnerComponent, NgClass],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
 })
@@ -28,6 +29,7 @@ export class LoginComponent implements OnInit
     {tipo: "Admin", mail: "brunobocca03@gmail.com", password: "123456", imagePath: "administradores/brunobocca03@gmail.com"}
   ];
   imagenesBotonesObtenidas = false;
+  claseSpinner = "spinner-desactivado";
 
   constructor(private fb: FormBuilder, protected authService: AuthService, public router: Router, public storageService: StorageService) { }
   ngOnInit(): void
@@ -53,28 +55,41 @@ export class LoginComponent implements OnInit
 
   }
 
+  mostrarSpinner()
+  {
+    this.claseSpinner = "spinner-activado";
+  }
+
+  ocultarSpinner()
+  {
+    this.claseSpinner = "spinner-desactivado";
+  }
+
   iniciarSesion()
   {
     if (this.formLogin.valid)
     {
+      this.mostrarSpinner();
       this.authService.logIn(this.user?.value, this.password?.value).then((response) =>
       {
         if(response.user.emailVerified == false)
           {
             this.authService.LogOut();
             this.swal.mostrarMensajeWarning("Mail no verificado", "Para iniciar sesión con esta cuenta, debe verificar su email. Por favor revise su bandeja de entrada.")
-
+            this.ocultarSpinner();
           }
           else
           {
             console.log(response);
             this.swal.mostrarMensajeExitoYNavegar("Sesión iniciada", "Serás redirigido a la página de bienvenida", "bienvenida")
-            
+            this.ocultarSpinner();
           }
       }).catch((error) =>
       {
         console.log(error);
         this.swal.mostrarMensajeError("Error", this.authService.traducirErrorCode(error.code));
+        this.ocultarSpinner();
+
       })
     }
 

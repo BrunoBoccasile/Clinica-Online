@@ -17,19 +17,24 @@
         @for (especialista of especialistas; track $index){
             @if(especialista.id)
             {
-                @if(nombreEspecialidad != null && this.tieneEspecialidad(especialista, nombreEspecialidad) || nombreEspecialidad == null)
+                @if(estado ==null || estado == especialista.estado)
                 {
-                    <tr (click)="enviarId(especialista.id)">
-                        <th scope="row" *ngIf="tipoVista == 1">{{especialista.dni}}</th>
-                        <td>{{especialista.nombre}}</td>
-                        <td>{{especialista.apellido}}</td>
-                        <td *ngIf="tipoVista == 1">{{especialista.edad}}</td>
-                        <td>{{especialista.especialidades | arrayToStringPipe: 'nombre'}}</td>
-                        <td *ngIf="tipoVista == 1">{{especialista.mail}}</td>
-                        <td *ngIf="tipoVista == 1">{{especialista.estado}}</td>
-                        <td></td>
-                    </tr>
+
+                    @if(nombreEspecialidad != null && this.tieneEspecialidad(especialista, nombreEspecialidad) || nombreEspecialidad == null)
+                    {
+                        <tr (click)="enviarId(especialista.id)" >
+                            <th scope="row" *ngIf="tipoVista == 1">{{especialista.dni}}</th>
+                            <td>{{especialista.nombre}}</td>
+                            <td>{{especialista.apellido}}</td>
+                            <td *ngIf="tipoVista == 1">{{especialista.edad}}</td>
+                            <td>{{especialista.especialidades | arrayToStringPipe}}</td>
+                            <td *ngIf="tipoVista == 1">{{especialista.mail}}</td>
+                            <td *ngIf="tipoVista == 1">{{especialista.estado}}</td>
+                            <td></td>
+                        </tr>
+                    }
                 }
+                
             }
         }
     </tbody>

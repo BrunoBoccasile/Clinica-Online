@@ -8,9 +8,9 @@
                 <th scope="col">DNI</th>
                 <th scope="col">Nombre</th>
                 <th scope="col">Apellido</th>
-                <th scope="col">Edad</th>
+                <th scope="col" >Edad</th>
                 <th scope="col">Obra social</th>
-                <th scope="col">Mail</th>
+                <th scope="col" *ngIf="tipoVista == 1">Mail</th>
 
             </tr>
         </thead>
@@ -24,7 +24,7 @@
                         <td>{{paciente.apellido}}</td>
                         <td>{{paciente.edad}}</td>
                         <td>{{paciente.obraSocial}}</td>
-                        <td>{{paciente.mail}}</td>
+                        <td *ngIf="tipoVista == 1">{{paciente.mail}}</td>
                     </tr>
                 }
             }

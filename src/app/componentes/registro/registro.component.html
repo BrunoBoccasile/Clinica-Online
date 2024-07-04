@@ -1,7 +1,8 @@
+<app-spinner [ngClass]="claseSpinner"></app-spinner>
 @if(authService.firebaseInicializado)
 {
   <div class="container">
-
+    
     @if (!authService.auth.currentUser)
     {
       @if(tipoRegistro == "")
@@ -11,119 +12,120 @@
           <button class="btn-doctor  btn-doctor-grande m-4" (click)="cambiarTipoRegistro('especialista')"><img src="../../../assets/doctor.png"></button>
         </div>
       }
-    @if (tipoRegistro == "paciente")
-    {
-      <div class="d-flex flex-row justify-content-center align-items-center">
-        <button class="btn-paciente-mediano btn-paciente m-4" (click)="cambiarTipoRegistro('paciente')"><img src="../../../assets/paciente.png"></button>
-        <button class="btn-doctor btn-paciente-chico m-4" (click)="cambiarTipoRegistro('especialista')"><img src="../../../assets/doctor.png"></button>
-      </div>
-    <div class="col-12">
-      <h1 class="display-3 m-4 text-center">Paciente</h1>
-        <form [formGroup]="formPaciente" (ngSubmit)="enviarFormPaciente()">
+      @if (tipoRegistro == "paciente")
+      {
+        <div class="d-flex flex-row justify-content-center align-items-center">
+          <button class="btn-paciente-mediano btn-paciente m-4" (click)="cambiarTipoRegistro('paciente')"><img src="../../../assets/paciente.png"></button>
+          <button class="btn-doctor btn-paciente-chico m-4" (click)="cambiarTipoRegistro('especialista')"><img src="../../../assets/doctor.png"></button>
+        </div>
+        <div class="col-12">
+          <h1 class="display-3 m-4 text-center">Paciente</h1>
+          <form [formGroup]="formPaciente" (ngSubmit)="enviarFormPaciente()">
             <div class="row g-3">
-                <div class="col-sm-4">
-                    <label class="form-label" for="dni">DNI</label>
-                    <input type="number" class="form-control" id="dni" formControlName="dni">
-                    @if(dniPaciente?.hasError('min'))
-                    {
-                    <ng-container>
-                        <small class="text-danger">Debe tener mas de 6 cifras</small>
-                    </ng-container>
-                    }
-                </div>
-                <div class="col-sm-4">
-                    <label class="form-label" for="nombre">Nombre</label>
-                    <input type="text" class="form-control" id="nombre" formControlName="nombre">
-                    @if(nombrePaciente?.hasError('pattern'))
-                    {
-                    <ng-container>
-                        <small class="text-danger">Debe estar compuesto sólo por letras (no más de 50)</small>
-                    </ng-container>
-                    }
-                </div>
-                <div class="col-sm-4">
-                    <label class="form-label" for="apellido">Apellido</label>
-                    <input type="text" class="form-control" id="apellido" formControlName="apellido">
-                    @if(apellidoPaciente?.hasError('pattern'))
-                    {
-                    <ng-container>
-                        <small class="text-danger">Debe estar compuesto sólo por letras (no más de 50)</small>
-                    </ng-container>
-                    }
-                </div>
-                <div class="col-sm-4">
-                    <label class="form-label" for="edad">Edad</label>
-                    <input type="number" class="form-control" id="edad" formControlName="edad">
-                    @if(edadPaciente?.hasError('min'))
-                    {
-                    <ng-container>
-                        <small class="text-danger">Debe ser mayor de edad</small>
-                    </ng-container>
-                    }
-                </div>
-                <div class="col-sm-4">
-                    <label class="form-label" for="obraSocial">Obra social</label>
-                    <input type="text" class="form-control" id="obraSocial" formControlName="obraSocial">
-                    @if(obraSocialPaciente?.hasError('pattern'))
-                    {
-                    <ng-container>
-                        <small class="text-danger">Debe estar compuesto sólo por letras (no más de 50)</small>
-                    </ng-container>
-                    }
-                </div>
-                <div class="col-sm-4">
-                    <label class="form-label" for="mail">Mail</label>
-                    <input type="text" class="form-control" id="mail" formControlName="mail">
-                    @if(mailPaciente?.hasError('email'))
-                    {
-                    <ng-container>
-                        <small class="text-danger">Email inválido</small>
-                    </ng-container>
-                    }
-                </div>
-                <div class="col-sm-4">
-                    <label class="form-label" for="password">Contraseña</label>
-                    <input type="password" class="form-control" id="password" formControlName="password">
-                    @if(passwordPaciente?.hasError('minlength'))
-                    {
-                    <ng-container>
-                        <small class="text-danger">Debe estar compuesta de más de 6 caracteres</small>
-                    </ng-container>
-                    }
-                </div>
-                <div class="col-sm-4">
-                    <label class="form-label" for="imagen1">Imagen de perfil 1</label>
-                    <input type="file" class="form-control" id="imagen1" formControlName="imagen1"
-                        (change)="guardarEventoImagen($event, 1)">
-                    @if(imagen1Paciente?.hasError('tipoArchivo'))
-                    {
-                    <ng-container>
-                        <small class="text-danger">Debe ser un archivo JPG, JPEG o PNG</small>
-                    </ng-container>
-                    }
-                </div>
-                <div class="col-sm-4">
-                    <label class="form-label" for="imagen2">Imagen de perfil 2</label>
-                    <input type="file" class="form-control" id="imagen2" formControlName="imagen2"
-                        (change)="guardarEventoImagen($event, 2)">
-                    @if(imagen2Paciente?.hasError('tipoArchivo'))
-                    {
-                    <ng-container>
-                        <small class="text-danger">Debe ser un archivo JPG, JPEG o PNG</small>
-                    </ng-container>
-                    }
-                </div>
+              <div class="col-sm-4">
+                <label class="form-label" for="dni">DNI</label>
+                <input type="number" class="form-control" id="dni" formControlName="dni">
+                @if(dniPaciente?.hasError('min'))
+                {
+                  <ng-container>
+                    <small class="text-danger">Debe tener mas de 6 cifras</small>
+                  </ng-container>
+                }
+              </div>
+              <div class="col-sm-4">
+                <label class="form-label" for="nombre">Nombre</label>
+                <input type="text" class="form-control" id="nombre" formControlName="nombre">
+                @if(nombrePaciente?.hasError('pattern'))
+                {
+                  <ng-container>
+                    <small class="text-danger">Debe estar compuesto sólo por letras (no más de 50)</small>
+                  </ng-container>
+                }
+              </div>
+              <div class="col-sm-4">
+                <label class="form-label" for="apellido">Apellido</label>
+                <input type="text" class="form-control" id="apellido" formControlName="apellido">
+                @if(apellidoPaciente?.hasError('pattern'))
+                {
+                  <ng-container>
+                    <small class="text-danger">Debe estar compuesto sólo por letras (no más de 50)</small>
+                  </ng-container>
+                }
+              </div>
+              <div class="col-sm-4">
+                <label class="form-label" for="edad">Edad</label>
+                <input type="number" class="form-control" id="edad" formControlName="edad">
+                @if(edadPaciente?.hasError('min'))
+                {
+                  <ng-container>
+                    <small class="text-danger">Debe ser mayor de edad</small>
+                  </ng-container>
+                }
+              </div>
+              <div class="col-sm-4">
+                <label class="form-label" for="obraSocial">Obra social</label>
+                <input type="text" class="form-control" id="obraSocial" formControlName="obraSocial">
+                @if(obraSocialPaciente?.hasError('pattern'))
+                {
+                  <ng-container>
+                    <small class="text-danger">Debe estar compuesto sólo por letras (no más de 50)</small>
+                  </ng-container>
+                }
+              </div>
+              <div class="col-sm-4">
+                <label class="form-label" for="mail">Mail</label>
+                <input type="text" class="form-control" id="mail" formControlName="mail">
+                @if(mailPaciente?.hasError('email'))
+                {
+                  <ng-container>
+                    <small class="text-danger">Email inválido</small>
+                  </ng-container>
+                }
+              </div>
+              <div class="col-sm-4">
+                <label class="form-label" for="password">Contraseña</label>
+                <input type="password" class="form-control" id="password" formControlName="password">
+                @if(passwordPaciente?.hasError('minlength'))
+                {
+                  <ng-container>
+                    <small class="text-danger">Debe estar compuesta de más de 6 caracteres</small>
+                  </ng-container>
+                }
+              </div>
+              <div class="col-sm-4">
+                <label class="form-label" for="imagen1">Imagen de perfil 1</label>
+                <input type="file" class="form-control" id="imagen1" formControlName="imagen1"
+                (change)="guardarEventoImagen($event, 1)">
+                @if(imagen1Paciente?.hasError('tipoArchivo'))
+                {
+                  <ng-container>
+                    <small class="text-danger">Debe ser un archivo JPG, JPEG o PNG</small>
+                  </ng-container>
+                }
+              </div>
+              <div class="col-sm-4">
+                <label class="form-label" for="imagen2">Imagen de perfil 2</label>
+                <input type="file" class="form-control" id="imagen2" formControlName="imagen2"
+                (change)="guardarEventoImagen($event, 2)">
+                @if(imagen2Paciente?.hasError('tipoArchivo'))
+                {
+                  <ng-container>
+                    <small class="text-danger">Debe ser un archivo JPG, JPEG o PNG</small>
+                  </ng-container>
+                }
+              </div>
             </div>
-            <div class="d-flex justify-content-center">
-
-                <button type="submit" class="btn w-50 mx-auto my-4" [disabled]="formPaciente.invalid">
-                    Enviar
-                </button>
+            <div class="d-flex justify-content-center flex-column p-2 align-items-center my-4">
+              <re-captcha (resolved)="ejecutarCaptchaPaciente($event)" siteKey="6LdmAAgqAAAAAEGrpT2RsM2qUyYzcpN6z9L9yXFp"></re-captcha>
+              
+              <button type="submit" class="btn w-50 mx-auto my-4" [disabled]="formPaciente.invalid">
+                Enviar
+              </button>
             </div>
-        </form>
-    </div>
-    }
-    @else if (tipoRegistro == "especialista")
+          </form>
+        </div>
+      }
+      @else if (tipoRegistro == "especialista")
     {
       <div class="d-flex flex-row justify-content-center align-items-center">
         <button class="btn-paciente-chico btn-paciente m-4" (click)="cambiarTipoRegistro('paciente')"><img src="../../../assets/paciente.png"></button>
@@ -148,7 +150,7 @@
                   {
     
                   <li class="list-group-item d-flex justify-content-between lh-sm"
-                    (click)="seleccionarEspecialidad(especialidad)">
+                    (click)="seleccionarEspecialidad(especialidad.nombre)">
                     <div>
                       <h6 class="my-0">{{especialidad.nombre}}</h6>
                     </div>
@@ -210,8 +212,12 @@
                 </div>
                 <div class="col-md-6  col-12 p-2">
                   <label class="form-label" for="especialidad">Especialidad</label>
-                  <input placeholder="Seleccione una" readonly type="text" class="form-control" id="especialidad"
+                  <div class="input-group mb-3">
+                    <input placeholder="Seleccione una" readonly type="text" class="form-control" id="especialidad"
                     formControlName="especialidad">
+                    <button class="btn" type="button" id="button-addon2" (click)="seleccionarEspecialidad('')">Limpiar</button>
+                  </div>
+                  
                   @if(especialidadEspecialista?.hasError('pattern'))
                   {
                   <ng-container>
@@ -255,10 +261,13 @@
                 </div>
               </div>
             </div>
-    
-            <button type="submit" class="btn w-50 mx-auto mt-4" [disabled]="formEspecialista.invalid">
-              Enviar
-            </button>
+            <div class="my-4 p-2 mx-auto w-50 d-flex flex-column align-items-center">
+              <re-captcha class="mx-auto" (resolved)="ejecutarCaptchaEspecialista($event)" siteKey="6LdmAAgqAAAAAEGrpT2RsM2qUyYzcpN6z9L9yXFp"></re-captcha>
+
+              <button type="submit" class="btn w-100 mt-4" [disabled]="formEspecialista.invalid">
+                Enviar
+              </button>
+            </div>
           </form>
     }
     }

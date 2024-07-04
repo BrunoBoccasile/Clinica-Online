@@ -21,6 +21,7 @@ export class TablaEspecialistasComponent implements OnInit, OnDestroy {
   @Input() tipoVista: number;
   @Input() nombreEspecialidad!: string;
   @Input() maxHeight!: number;
+  @Input() estado!: string;
 
   enviarId(id: string)
   {
@@ -58,7 +59,7 @@ export class TablaEspecialistasComponent implements OnInit, OnDestroy {
   {
     let retorno = false;
     especialista.especialidades.forEach(especialidad => {
-      if(especialidad.nombre == nombreEspecialidad)
+      if(especialidad == nombreEspecialidad)
         {
           retorno = true;
         }

@@ -137,4 +137,10 @@ export class AdministradoresService
       });
     });
   }
+
+  getAdminByMail(email: string)
+  {
+      const q = query(collection(this.firestore, "administradores"), where("mail", "==", email));
+      return getDocs(q);
+  }
 }

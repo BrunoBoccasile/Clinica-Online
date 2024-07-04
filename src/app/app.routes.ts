@@ -25,11 +25,15 @@ export const routes: Routes = [
     {
         path: 'turnos/solicitar',
         loadComponent: () => import('./componentes/solicitar-turno/solicitar-turno.component').then(m => m.SolicitarTurnoComponent),
-        // canActivate: [pacienteGuardGuard]
+        canActivate: [pacienteGuardGuard]
     },
     {
         path: 'mi-perfil',
         loadComponent: () => import('./componentes/mi-perfil/mi-perfil.component').then(m => m.MiPerfilComponent),
         canActivate: [logeadoGuardGuard]
     },
+    {
+        path: 'turnos/mis-turnos',
+        loadComponent: () => import('./componentes/mis-turnos/mis-turnos.component').then(m => m.MisTurnosComponent)
+    }
 ];

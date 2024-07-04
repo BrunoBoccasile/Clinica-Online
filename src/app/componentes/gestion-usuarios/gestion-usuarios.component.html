@@ -1,3 +1,5 @@
+<app-spinner [ngClass]="claseSpinner"></app-spinner>
+
 <div class="d-flex flex-column align-items-center col-12">
 <div class="col-12 col-md-8">
     <div class="card my-4">
@@ -174,7 +176,7 @@
               {
 
               <li class="list-group-item d-flex justify-content-between lh-sm"
-                (click)="seleccionarEspecialidad(especialidad)">
+                (click)="seleccionarEspecialidad(especialidad.nombre)">
                 <div>
                   <h6 class="my-0">{{especialidad.nombre}}</h6>
                 </div>
@@ -236,8 +238,11 @@
             </div>
             <div class="col-md-6  col-12 p-2">
               <label class="form-label" for="especialidad">Especialidad</label>
-              <input placeholder="Seleccione una" readonly type="text" class="form-control" id="especialidad"
+              <div class="input-group mb-3">
+                <input placeholder="Seleccione una" readonly type="text" class="form-control" id="especialidad"
                 formControlName="especialidad">
+                <button class="btn" type="button" id="button-addon2" (click)="seleccionarEspecialidad('')">Limpiar</button>
+              </div>
               @if(especialidadEspecialista?.hasError('pattern'))
               {
               <ng-container>

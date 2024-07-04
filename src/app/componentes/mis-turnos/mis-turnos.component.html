@@ -1,0 +1,261 @@
+<app-spinner [ngClass]="claseSpinner"></app-spinner>
+
+
+
+
+<div class="container d-flex align-items-center justify-content-center h-100">
+    
+    <div class="card-mis-turnos card p-4 col-md-10">
+        @if (autenticacionLista) 
+        {
+        <h1 class="display-3 text-center">Mis turnos</h1>
+        <h2 class="mb-0 text-center">Filtros:</h2>
+        <div class="d-flex align-items-center col-12">
+            <div class="mx-2">
+                <button [disabled]="!turnosListos" (click)="limpiarFiltros()" class="btn">
+                    <svg  xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-trash3" viewBox="0 0 16 16">
+                        <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47M8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="input-group mx-1">
+                <button class="btn btn-outline-secondary" type="button" (click)="mostrarModalFiltroEspecialidades()" [disabled]="!turnosListos">Especialidad</button>
+                <input type="text" class="form-control" value={{especialidadSeleccionada}} readonly>
+            </div>
+            <div class="input-group mx-1">
+                @if (authService.tipoUsuario == "paciente") 
+                {
+                    <button class="btn btn-outline-secondary" type="button" (click)="mostrarModalFiltroEspecialistas()" [disabled]="!turnosListos">Especialista</button>
+                    <input type="text" class="form-control" readonly value={{especialistaSeleccionado}}>
+                }
+                @if (authService.tipoUsuario == "especialista")
+                {
+                    <button class="btn btn-outline-secondary" type="button" (click)="mostrarModalFiltroPacientes()" [disabled]="!turnosListos">Paciente</button>
+                    <input type="text" class="form-control" readonly value={{pacienteSeleccionado}}> 
+                }
+            </div>
+        </div>
+
+        <div class="card p-1 my-4" style="overflow-y: auto; max-height: 500px;">
+
+            <table class="table table-striped ">
+                <thead>
+                    <tr>
+                        <th scope="col">Especialidad</th>
+                        <th scope="col" *ngIf="authService.tipoUsuario == 'paciente'">Especialista</th>
+                        <th scope="col" *ngIf="authService.tipoUsuario == 'especialista'">Paciente</th>
+
+                        <th scope="col">Fecha</th>
+                        <th scope="col">Hora</th>
+                        <th scope="col">Estado</th>
+                    </tr>
+                </thead>
+                <tbody class="table-group-divider">
+                    @if (turnosListos)
+                    {
+                        @if(hayTurnos)
+                        {             
+                            @for (turno of turnos; track $index)
+                            { 
+                                <tr (click)="mostrarModalAccionesTurno(turno)" role="button">
+                                    <td>{{turno.especialidad}}</td>
+                                    <td *ngIf="authService.tipoUsuario == 'paciente'">{{turno.nombreEspecialista + " " + turno.apellidoEspecialista}}</td>
+                                    <td *ngIf="authService.tipoUsuario == 'especialista'">{{turno.nombrePaciente + " " + turno.apellidoPaciente}}</td>
+                                    <td>{{turno.fecha}}</td>
+                                    <td>{{turno.hora | minutosAHoraPipe}}</td>
+                                    <td>{{turno.estado}}</td>
+                                </tr>
+                            }
+                        }
+                        @else 
+                        {
+                            <td colspan="5" class="text-center">
+                                <div class="d-flex justify-content-center align-items-center w-100 h-100">
+                                    <div class="card bg-danger p-3">
+                                        @if (filtrosActivos) 
+                                        {
+                                            <h3 class="text-white">No hay turnos para mostrar</h3>
+                                        }
+                                    </div>
+                                </div>                        
+                            </td>
+                        }
+                    }
+                    @else
+                    {
+                        <!-- <tr>
+                            <td colspan="5" class="text-center">
+                                <div class="d-flex justify-content-center align-items-center w-100 h-100">
+                                    <app-spinner></app-spinner>
+                                </div>
+                            </td>
+                        </tr> -->
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    @else 
+    {
+        <div class="my-auto mx-auto text-center">
+            <h1>Cargando...</h1>
+        </div>
+    }
+        </div>
+    </div>
+
+<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+aria-labelledby="staticBackdropLabel" aria-hidden="true" #modalFiltroEspecialidades>
+<div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h1 class="modal-title fs-5" id="staticBackdropLabel">
+                Seleccione una especialidad</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body mx-auto">
+                <ul class="list-group m-4">
+                    <li class="list-group-item active text-center" aria-current="true">Especialidades</li>
+                    @if (especialidades)
+                    {
+                        @for (especialidad of especialidades; track $index)
+                        {
+                            <li  class="list-group-item">
+                                <button [disabled]="!turnosListos" (click)="establecerFiltro('especialidad', especialidad.nombre)" class="btn w-100" data-bs-dismiss="modal">
+                                    {{especialidad.nombre}}
+                                </button>
+                            </li>
+                        }
+                    }
+                    @else {
+                    <app-spinner></app-spinner>
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="staticBackdropLabel" aria-hidden="true" #modalFiltroEspecialistas>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="staticBackdropLabel">
+                    Seleccione un especialista</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body mx-auto">
+                <ul class="list-group m-4">
+                    <li class="list-group-item active text-center" aria-current="true">Especialistas</li>
+                        <app-tabla-especialistas *ngIf="turnosListos" [estado]="'aprobado'" (onEnviarId)="establecerFiltro('idEspecialista', $event)" data-bs-dismiss="modal" role="button"></app-tabla-especialistas>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="staticBackdropLabel" aria-hidden="true" #modalAccionesTurno>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="staticBackdropLabel">
+                    Completar acciones</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body mx-auto d-flex flex-column p-2">
+                
+                @if ( 
+                    (authService.tipoUsuario == "paciente" && !mostrarBotonesAcciones.cancelar && !mostrarBotonesAcciones.verResena && !mostrarBotonesAcciones.completarEncuesta && !mostrarBotonesAcciones.calificarAtencion )
+                    ||
+                    (authService.tipoUsuario == "especialista" && !mostrarBotonesAcciones.cancelar && !mostrarBotonesAcciones.aceptarTurno && !mostrarBotonesAcciones.rechazarTurno && !mostrarBotonesAcciones.finalizarTurno)
+                    )
+                {
+                    <h5 class="mx-4 p-4">No hay acciones para realizar</h5>
+                }
+
+                @if(mostrarBotonesAcciones.aceptarTurno && mostrarBotonesAcciones.rechazarTurno)
+                {
+                <div class="card p-2 my-4">
+                    <button class="btn btn-success text-white my-2" data-bs-dismiss="modal" (click)="cambiarEstadoTurno('aceptado')">Aceptar turno</button>
+                        <button class="btn btn-dark text-white my-2" data-bs-dismiss="modal" (click)="cambiarEstadoTurno('rechazado')">Rechazar turno</button>
+                </div> 
+            }
+
+                @if (mostrarBotonesAcciones.finalizarTurno) 
+                {
+                    <button class="btn btn-primary text-white my-2" data-bs-dismiss="modal" (click)="cambiarEstadoTurno('realizado')">Finalizar turno</button>
+
+                }
+
+                @if (mostrarBotonesAcciones.cancelar) 
+                {
+                    <div class="card p-2 my-4">
+                        <textarea class="form-control" id="exampleFormControlTextarea1" rows="3" placeholder="Motivos*" [(ngModel)]="motivosCancelacion"></textarea>
+                        <button class="btn btn-danger text-white my-2" data-bs-dismiss="modal" (click)="cancelarTurno()" [disabled]="!motivosCancelacion">Cancelar turno</button>
+                    </div>
+                }
+                <button class="btn btn-success my-2" *ngIf="mostrarBotonesAcciones.verResena" data-bs-dismiss="modal">Ver reseña</button>
+                
+                @if(mostrarBotonesAcciones.calificarAtencion)
+                {
+
+                    <div class="card p-2">
+                        <form [formGroup]="formEncuesta" (ngSubmit)="enviarEncuesta()" class="m-3">
+                            <div style="max-height: 300px; overflow-y: auto;">
+                                
+                                <div *ngFor="let pregunta of preguntasEncuesta">
+                                    <div class="mb-3">
+                                        <label>{{ pregunta.number + ") " + pregunta.question }}</label>
+                                        <div class="form-check">
+                                            <input 
+                                            class="form-check-input" 
+                                            type="radio" 
+                                            [formControlName]="'question' + pregunta.number" 
+                                            [value]="'Sí'"
+                                            id="pregunta{{pregunta.number}}Si">
+                                            <label class="form-check-label" for="pregunta{{pregunta.number}}Si">Sí</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input 
+                                            class="form-check-input" 
+                                            type="radio" 
+                                            [formControlName]="'question' + pregunta.number" 
+                                            [value]="'No'"
+                                            id="pregunta{{pregunta.number}}No">
+                                            <label class="form-check-label" for="pregunta{{pregunta.number}}No">No</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-warning my-2 w-100" data-bs-dismiss="modal" [disabled]="!formEncuesta.valid">Enviar encuesta</button>
+                        </form>
+                    </div>
+                    <button class="btn btn-primary my-2" *ngIf="mostrarBotonesAcciones.calificarAtencion" data-bs-dismiss="modal">Calificar atención</button>
+                }
+                </div>
+            </div>
+        </div>
+        
+    </div>
+
+
+    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="staticBackdropLabel" aria-hidden="true" #modalFiltroPacientes>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="staticBackdropLabel">
+                    Seleccione un paciente</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body mx-auto">
+                <ul class="list-group m-4">
+                    <li class="list-group-item active text-center" aria-current="true">Pacientes</li>
+                        <app-tabla-pacientes *ngIf="turnosListos" (onEnviarId)="establecerFiltro('idPaciente', $event)" data-bs-dismiss="modal" role="button"></app-tabla-pacientes>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

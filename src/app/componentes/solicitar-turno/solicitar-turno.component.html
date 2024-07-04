@@ -7,63 +7,165 @@ próximos 15 días.
 seleccionado y su disponibilidad horaria.
 ● NO UTILIZAR Datepicker
 ■ En el caso del administrador, deberá marcar el Paciente. -->
-<div class="container">
-    <h1 class="display-1">Solicitar turno</h1>
-
-  <div class="card p-4">
-    <div class="d-flex flex-row">
-      <div class="container-0">
-        <h2>Seleccione una especialidad</h2>
-        <form [formGroup]="formTurno" (ngSubmit)="nada()">
-        @if(especialidadesObtenidas)
+<div class="container d-flex align-items-center justify-content-center h-100">
+    <div class="card card-secuencias col-md-10 p-4">
+        <div>
+            <button class="btn rounded-circle p-0 btn-volver" (click)="cambiarSecuencia(false)" [disabled]="(secuenciaCard == 'especialidades' && !esAdmin) || (secuenciaCard == 'pacientes' && esAdmin)">
+                <svg class="w-100 h-100" xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="bi bi-arrow-left-circle" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8m15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-4.5-.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5z"/>
+                </svg>
+            </button>
+        </div>
+        @if(secuenciaCard)
         {
-            <select class="form-select mb-2" id="especialidad" formControlName="especialidad" (ngModelChange)="especialistaSeleccionado = false">
-                @for (especialidad of especialidades; track $index)
-                {
-                <option value={{especialidad.nombre}}>{{especialidad.nombre}}</option>
-                }
-            </select>
-          }
-          @else {
-            <app-spinner></app-spinner>
-          }
-          
-        </form>
-        <h2>Lista de especialistas</h2>
-        <div class="card my-4 card-especialistas">
-          @if(especialidad?.value != "")
-          {
-            <div class="card-body">
-              <h6 class="card-subtitle mb-2 text-muted">Seleccione uno</h6>
-              <app-tabla-especialistas [tipoVista]="0" [maxHeight]="500" [nombreEspecialidad]="especialidad?.value" (onEnviarId)="recibirIdEspecialista($event)"></app-tabla-especialistas>
+
+        @if (secuenciaCard == "pacientes") 
+        {
+            <div class="card my-auto border rounded-3 p-4">
+                <h1 class="text-center">Seleccione un paciente</h1>
+                <app-tabla-pacientes class="my-4" [tipoVista]="1" (onEnviarId)="recibirIdPaciente($event)"></app-tabla-pacientes>
+                <div class="input-group mb-3">
+                    <span class="input-group-text" id="basic-addon1">id</span>
+                    <input type="text" class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1" [value]="idPaciente">
+                    <button class="btn btn-rectangular" type="button" id="button-addon2" [disabled]="idPaciente == ''" (click)="cambiarSecuencia(true)">Siguiente</button>
+  
+                </div>
             </div>
-          }
-          @else 
-          {
-            <h5 class="text-center">Seleccione una especialidad para listar los especialistas correspondientes</h5>
-          }
-          </div>
-      </div>
-      <div class="container-1">
-        <h2>Turnos disponibles</h2>
-        @if (especialistaSeleccionado)
-         {
-          <h5>{{especialistaSeleccionado.nombre + " " + especialistaSeleccionado.apellido}}</h5>
+        }
+        @if (secuenciaCard == "especialidades") 
+        {
+            <h1 class="text-center display-2">Seleccione una especialidad</h1>
+            <div class="flex-wrap d-flex h-100 align-items-center justify-content-center">
+                @if (especialidades != null) 
+                {
+                    @for (especialidad of especialidades; track $index) 
+                    {
+                        <button class="btn rounded-circle btn-redondo p-3 m-3" (click)="seleccionarEspecialidad(especialidad.nombre)">
+                            <img  class="w-100 h-100  rounded-circle" [src]="'../../../assets/especialidades/' + especialidad.nombre + '.png'" (error)="onImageError($event)">
+                        </button>
+                    }
+                }
+                @else 
+                {
+                    <app-spinner></app-spinner>            
+                }
+            </div>
+        }
+        @else if(secuenciaCard == "especialistas")
+        {            
+            <h1 class="text-center display-2">Seleccione un especialista</h1>
+            <div class="flex-wrap d-flex h-100 align-items-center justify-content-center">
+                @if (especialistasFiltrados != null) 
+                {
+                    @if(especialistasFiltrados.length > 0)
+                    {
 
-          @for (espe of especialistaSeleccionado.especialidades; track $index) 
-          {
-            @if(espe.nombre == especialidad?.value)
-            {
+                        @for (especialista of especialistasFiltrados; track $index) 
+                        {
+                            <div class="d-flex flex-column justify-content-center align-items-center m-4">
+                            <button class="btn rounded-circle btn-redondo p-2 m-2" (click)="seleccionarEspecialista(especialista)">
+                                @if(especialista.imagen)
+                                {
+                                        <img  class="w-100 h-100  rounded-circle" src={{especialista.imagen}}>
+                                    }
+                                    @else {
+                                        <app-spinner class="w-100 h-100 rounded-circle"></app-spinner>
+                                    }
+                                </button>
+                                <h3>{{especialista.nombre}} {{especialista.apellido}}</h3>
+                            </div>
+                        }
+                    }
+                    @else 
+                    {
+                        <div class="d-flex flex-column align-items-center justify-content-center p-4">
 
-            }
-          }
-         }
-         @else {
-          <h5>Seleccione un especialista para ver sus turnos disponbiles.</h5>
-         }
-      </div>
+                            <h3 class="m-3">No hay especialistas para esta especialidad</h3>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" fill="currentColor" class="bi bi-emoji-frown" viewBox="0 0 16 16">
+                                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                                <path d="M4.285 12.433a.5.5 0 0 0 .683-.183A3.5 3.5 0 0 1 8 10.5c1.295 0 2.426.703 3.032 1.75a.5.5 0 0 0 .866-.5A4.5 4.5 0 0 0 8 9.5a4.5 4.5 0 0 0-3.898 2.25.5.5 0 0 0 .183.683M7 6.5C7 7.328 6.552 8 6 8s-1-.672-1-1.5S5.448 5 6 5s1 .672 1 1.5m4 0c0 .828-.448 1.5-1 1.5s-1-.672-1-1.5S9.448 5 10 5s1 .672 1 1.5"/>
+                            </svg>
+                        </div>
+                    }
+                }
+                    @else 
+                {
+                    <app-spinner ></app-spinner>            
+                }
+            </div>
+        }
+        @else if (secuenciaCard == "fechas") 
+        {
+            <h1 class="text-center display-2">Seleccione una fecha</h1>
+            <div class="flex-wrap d-flex h-100 align-items-center justify-content-center">
+                @if (arrayTurnosEspecialista != null) 
+                {
+                    @if (arrayTurnosEspecialista.length > 0) 
+                    {
+
+                        @for (turno of arrayTurnosEspecialista; track $index) 
+                        {
+                            <button class="btn btn-lg btn-rectangular m-2" (click)="seleccionarFecha(turno)">
+                               {{turno.fecha}}
+                            </button>
+                        }
+                    }
+                    @else 
+                    {
+                        <div class="d-flex flex-column align-items-center justify-content-center p-4">
+
+                            <h3 class="m-3">No hay fechas disponibles para este especialista</h3>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" fill="currentColor" class="bi bi-emoji-frown" viewBox="0 0 16 16">
+                                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                                <path d="M4.285 12.433a.5.5 0 0 0 .683-.183A3.5 3.5 0 0 1 8 10.5c1.295 0 2.426.703 3.032 1.75a.5.5 0 0 0 .866-.5A4.5 4.5 0 0 0 8 9.5a4.5 4.5 0 0 0-3.898 2.25.5.5 0 0 0 .183.683M7 6.5C7 7.328 6.552 8 6 8s-1-.672-1-1.5S5.448 5 6 5s1 .672 1 1.5m4 0c0 .828-.448 1.5-1 1.5s-1-.672-1-1.5S9.448 5 10 5s1 .672 1 1.5"/>
+                            </svg>
+                        </div>
+                    }
+                }
+                @else 
+                {
+                    <app-spinner></app-spinner>            
+                }
+            </div>
+        }
+        @else if (secuenciaCard == "horarios") 
+        {
+            <h1 class="text-center display-2">Seleccione un horario</h1>
+            <div class="flex-wrap d-flex h-100 align-items-center justify-content-center">
+                @if (horariosCargados) 
+                {
+                    @if (horariosFechaSeleccionada.length > 0) 
+                    {
+
+                        @for (horario of horariosFechaSeleccionada; track $index) 
+                        {
+                            <button class="btn btn-lg btn-rectangular m-2" (click)="seleccionarHorario(horario)">
+                               {{horario | minutosAHoraPipe}}
+                            </button>
+                        }
+                    }
+                    @else 
+                    {
+                        <div class="d-flex flex-column align-items-center justify-content-center p-4">
+
+                            <h3 class="m-3">No hay horarios disponibles para esta fecha</h3>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" fill="currentColor" class="bi bi-emoji-frown" viewBox="0 0 16 16">
+                                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                                <path d="M4.285 12.433a.5.5 0 0 0 .683-.183A3.5 3.5 0 0 1 8 10.5c1.295 0 2.426.703 3.032 1.75a.5.5 0 0 0 .866-.5A4.5 4.5 0 0 0 8 9.5a4.5 4.5 0 0 0-3.898 2.25.5.5 0 0 0 .183.683M7 6.5C7 7.328 6.552 8 6 8s-1-.672-1-1.5S5.448 5 6 5s1 .672 1 1.5m4 0c0 .828-.448 1.5-1 1.5s-1-.672-1-1.5S9.448 5 10 5s1 .672 1 1.5"/>
+                            </svg>
+                        </div>
+                    }
+                }
+                @else 
+                {
+                    <app-spinner></app-spinner>            
+                }
+            </div>
+        }
+    }
+    @else {
+        <app-spinner class="d-flex justify-content-center align-items-center"></app-spinner>
+    }
+
     </div>
-  </div>
-
-
 </div>

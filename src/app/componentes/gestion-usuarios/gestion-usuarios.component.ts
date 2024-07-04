@@ -14,17 +14,18 @@ import { getAuth, sendEmailVerification } from '@angular/fire/auth';
 import { PacientesService } from '../../servicios/pacientes.service';
 import { Especialista } from '../../entidades/especialista';
 import { EspecialidadesService } from '../../servicios/especialidades.service';
-import { Especialidad } from '../../entidades/especialidad';
 import { Subscription } from 'rxjs';
 import { SpinnerComponent } from '../spinner/spinner.component';
 import { Administrador } from '../../entidades/administrador';
 import { AdministradoresService } from '../../servicios/administradores.service';
 import { TablaAdministradoresComponent } from '../tabla-administradores/tabla-administradores.component';
+import { Especialidad } from '../../entidades/especialidad';
+import { NgClass } from '@angular/common';
 
 @Component({
   selector: 'app-gestion-usuarios',
   standalone: true,
-  imports: [TablaPacientesComponent, TablaEspecialistasComponent, ReactiveFormsModule, SpinnerComponent, TablaAdministradoresComponent],
+  imports: [TablaPacientesComponent, TablaEspecialistasComponent, ReactiveFormsModule, SpinnerComponent, TablaAdministradoresComponent, NgClass],
   templateUrl: './gestion-usuarios.component.html',
   styleUrl: './gestion-usuarios.component.css'
 })
@@ -59,6 +60,7 @@ export class GestionUsuariosComponent implements OnInit
   imagenEspecialistaSeleccionado: string;
   imagenAdministradorSeleccionado: string;
   administradorSeleccionadoCargado: boolean;
+  claseSpinner = "spinner-desactivado";
   constructor(public administradoresService: AdministradoresService, public especialidadesService: EspecialidadesService, public fb: FormBuilder, public especialistasService: EspecialistasService, public authService: AuthService, public router: Router, public storageService: StorageService, public pacientesService: PacientesService)
   {
     this.imagen1PacienteSeleccionado = "";
@@ -94,12 +96,13 @@ export class GestionUsuariosComponent implements OnInit
       imagen2: ['', [tipoArchivoValidator(['jpg', 'jpeg', 'png']), Validators.required]]
     })
 
+
     this.formEspecialista = this.fb.group({
       dni: ['', [Validators.min(1000000), Validators.required]],
       nombre: ['', [Validators.pattern("^[A-Za-zÁÉÍÓÚáéíóúÑñÜü -]{1,50}$"), Validators.required]],
       apellido: ['', [Validators.pattern("^[A-Za-zÁÉÍÓÚáéíóúÑñÜü -]{1,50}$"), Validators.required]],
       edad: ['', [Validators.min(18), Validators.required]],
-      especialidad: ['', [Validators.pattern("^[A-Za-zÁÉÍÓÚáéíóúÑñÜü -]{1,50}$"), Validators.required]],
+      especialidad: ['', Validators.required],
       mail: ['', [Validators.email, Validators.required]],
       password: ['', [Validators.minLength(6), Validators.required]],
       imagen: ['', [tipoArchivoValidator(['jpg', 'jpeg', 'png']), Validators.required]],
@@ -132,6 +135,17 @@ export class GestionUsuariosComponent implements OnInit
 
 
   }
+
+  mostrarSpinner()
+  {
+    this.claseSpinner = "spinner-activado";
+  }
+
+  ocultarSpinner()
+  {
+    this.claseSpinner = "spinner-desactivado";
+  }
+
   recibirIdEspecialista(id: string)
   {
     this.especialistaSeleccionadoCargado = false;
@@ -242,9 +256,7 @@ export class GestionUsuariosComponent implements OnInit
 
     if (this.formEspecialidad.valid)
     {
-      let especialidad: Especialidad = {
-        nombre: this.nombreEspecialidad?.value
-      }
+      let especialidad = this.nombreEspecialidad?.value;
       let especialidadExistente = false;
       this.especialidades.forEach(especialidad =>
       {
@@ -269,16 +281,14 @@ export class GestionUsuariosComponent implements OnInit
   {
     if (this.formEspecialista.valid)
     {
+      this.mostrarSpinner();
+
       let especialista: Especialista = {
         dni: this.dniEspecialista?.value,
         nombre: this.nombreEspecialista?.value,
         apellido: this.apellidoEspecialista?.value,
         edad: this.edadEspecialista?.value,
-        especialidades: [
-          {
-            nombre: this.especialidadEspecialista?.value
-          }
-        ],
+        especialidades: this.especialidadEspecialista?.value.split(", "),
         mail: this.mailEspecialista?.value,
         password: this.passwordEspecialista?.value
       };
@@ -286,6 +296,7 @@ export class GestionUsuariosComponent implements OnInit
       // Registro del usuario
       this.authService.registerSinLogin(especialista.mail, especialista.password).then(response =>
       {
+        this.ocultarSpinner();
         console.log(response);
         this.swal.mostrarMensajeExito("Cuenta creada con exito", "El usuario registrado deberá verificar su mail.");
 
@@ -314,6 +325,8 @@ export class GestionUsuariosComponent implements OnInit
 
         }).catch(error =>
         {
+          this.ocultarSpinner();
+
           console.log('Error al subir las imagenes:', error);
         });
       }).catch(error =>
@@ -330,6 +343,8 @@ export class GestionUsuariosComponent implements OnInit
   {
     if (this.formAdministrador.valid)
     {
+      this.mostrarSpinner();
+
       let administrador: Administrador = {
         dni: this.dniAdministrador?.value,
         nombre: this.nombreAdministrador?.value,
@@ -342,6 +357,8 @@ export class GestionUsuariosComponent implements OnInit
       // Registro del usuario
       this.authService.registerSinLogin(administrador.mail, administrador.password).then(response =>
       {
+        this.ocultarSpinner();
+
         console.log(response);
         this.swal.mostrarMensajeExito("Cuenta creada con exito", "El usuario registrado deberá verificar su mail.");
 
@@ -374,6 +391,8 @@ export class GestionUsuariosComponent implements OnInit
         });
       }).catch(error =>
       {
+        this.ocultarSpinner();
+
         console.log(error);
         this.swal.mostrarMensajeError("Error", this.authService.traducirErrorCode(error.code));
       });
@@ -386,6 +405,7 @@ export class GestionUsuariosComponent implements OnInit
   {
     if (this.formPaciente.valid)
     {
+      this.mostrarSpinner();
       let paciente: Paciente = {
         dni: this.dniPaciente?.value,
         nombre: this.nombrePaciente?.value,
@@ -399,6 +419,8 @@ export class GestionUsuariosComponent implements OnInit
       // Registro del usuario
       this.authService.registerSinLogin(paciente.mail, paciente.password).then(response =>
       {
+        this.ocultarSpinner();
+
         console.log(response);
         this.swal.mostrarMensajeExito("Cuenta creada con exito", "El usuario registrado deberá verificar su mail.");
 
@@ -434,6 +456,8 @@ export class GestionUsuariosComponent implements OnInit
         });
       }).catch(error =>
       {
+        this.ocultarSpinner();
+
         console.log(error);
         this.swal.mostrarMensajeError("Error", this.authService.traducirErrorCode(error.code));
       });
@@ -443,11 +467,37 @@ export class GestionUsuariosComponent implements OnInit
     }
   }
 
-  seleccionarEspecialidad(especialidad: Especialidad)
+  seleccionarEspecialidad(especialidad: string)
   {
-    this.formEspecialista.patchValue({
-      especialidad: especialidad.nombre,
-    });
+    const especialidadesActuales = this.especialidadEspecialista?.value;
+
+    if (especialidadesActuales != "")
+    {
+      const especialidadesLista = especialidadesActuales.split(", ");
+
+      if (especialidadesLista.includes(especialidad))
+      {
+        return;
+      }
+
+      if (especialidad == "")
+      {
+        this.formEspecialista.patchValue({
+          especialidad: especialidad
+        });
+      } else
+      {
+        this.formEspecialista.patchValue({
+          especialidad: (especialidadesActuales + ", " + especialidad),
+        });
+      }
+    } else
+    {
+      this.formEspecialista.patchValue({
+        especialidad: especialidad
+      });
+    }
+
   }
 
   //EVENTOS IMAGEN___________________________________________________________________________________________________________________________________________________________

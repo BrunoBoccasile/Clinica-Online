@@ -30,7 +30,7 @@ export class EspecialidadesService {
   {
     let col = collection(this.firestore, 'especialidades');
     addDoc(col, {
-      nombre: especialidad.nombre
+      nombre: especialidad
     }).then(() => {
       console.log('Especialidad guardada con éxito');
       this.guardarEspecialidadSubject.next(true);

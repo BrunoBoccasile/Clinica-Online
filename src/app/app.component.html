@@ -25,6 +25,9 @@
           <li class="nav-item" *ngIf="this.authService.tipoUsuario == 'administrador' || this.authService.tipoUsuario == 'paciente'">
             <a class="nav-link"  routerLink='turnos/solicitar'>Solicitar turno</a>
           </li>
+          <li class="nav-item" *ngIf="this.authService.auth.currentUser">
+            <a class="nav-link"  routerLink='turnos/mis-turnos'>Mis turnos</a>
+          </li>
         </ul>
       </div>
         @if (this.authService.auth.currentUser) {

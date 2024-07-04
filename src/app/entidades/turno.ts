@@ -1,6 +1,14 @@
 export interface Turno{
-    dia: string,
-    hora: Date,
+    id?: string,
+    fecha: string,
+    hora: number,
     idEspecialista: string,
-    nombreEspecialidad: number
+    especialidad: string,
+    idPaciente: string,
+    nombreEspecialista: string,
+    apellidoEspecialista: string,
+    nombrePaciente: string,
+    apellidoPaciente: string,
+    estado?: string,
+    motivosCancelacion?: string
 }

@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { tipoArchivoValidator } from '../../validators/tipoarchivo';
-import { Especialidad } from '../../entidades/especialidad';
 import { EspecialidadesService } from '../../servicios/especialidades.service';
 import { Subscription } from 'rxjs';
 import { Storage } from '@angular/fire/storage';
@@ -16,10 +15,13 @@ import { Router } from '@angular/router';
 import { SpinnerComponent } from '../spinner/spinner.component';
 import '../../clases/sweetAlert'
 import { SweetAlert } from '../../clases/sweetAlert';
+import { Especialidad } from '../../entidades/especialidad';
+import { NgClass } from '@angular/common';
+import { RecaptchaModule, ReCaptchaV3Service } from 'ng-recaptcha';
 @Component({
   selector: 'app-registro',
   standalone: true,
-  imports: [ReactiveFormsModule, SpinnerComponent],
+  imports: [ReactiveFormsModule, SpinnerComponent, NgClass, RecaptchaModule],
   templateUrl: './registro.component.html',
   styleUrl: './registro.component.css'
 })
@@ -39,9 +41,9 @@ export class RegistroComponent implements OnInit
   eventoImagen1: any;
   eventoImagen2: any;
   eventoImagenEsp: any;
-  
+  claseSpinner = "spinner-desactivado";
   swal: SweetAlert = new SweetAlert(this.router);
-  constructor( private fb: FormBuilder, public especialidadesService: EspecialidadesService, public storage: Storage, public pacientesService: PacientesService, public especialistasService: EspecialistasService, public authService: AuthService, public storageService: StorageService, public router: Router)
+  constructor(private fb: FormBuilder, public especialidadesService: EspecialidadesService, public storage: Storage, public pacientesService: PacientesService, public especialistasService: EspecialistasService, public authService: AuthService, public storageService: StorageService, public router: Router)
   {
     this.tipoRegistro = "";
     this.especialidades = [];
@@ -61,7 +63,8 @@ export class RegistroComponent implements OnInit
       mail: ['', [Validators.email, Validators.required]],
       password: ['', [Validators.minLength(6), Validators.required]],
       imagen1: ['', [tipoArchivoValidator(['jpg', 'jpeg', 'png']), Validators.required]],
-      imagen2: ['', [tipoArchivoValidator(['jpg', 'jpeg', 'png']), Validators.required]]
+      imagen2: ['', [tipoArchivoValidator(['jpg', 'jpeg', 'png']), Validators.required]],
+      captcha: ['', Validators.required]
     })
 
     this.formEspecialista = this.fb.group({
@@ -69,10 +72,11 @@ export class RegistroComponent implements OnInit
       nombre: ['', [Validators.pattern("^[A-Za-zÁÉÍÓÚáéíóúÑñÜü -]{1,50}$"), Validators.required]],
       apellido: ['', [Validators.pattern("^[A-Za-zÁÉÍÓÚáéíóúÑñÜü -]{1,50}$"), Validators.required]],
       edad: ['', [Validators.min(18), Validators.required]],
-      especialidad: ['', [Validators.pattern("^[A-Za-zÁÉÍÓÚáéíóúÑñÜü -]{1,50}$"), Validators.required]],
+      especialidad: ['', Validators.required],
       mail: ['', [Validators.email, Validators.required]],
       password: ['', [Validators.minLength(6), Validators.required]],
       imagen: ['', [tipoArchivoValidator(['jpg', 'jpeg', 'png']), Validators.required]],
+      captcha: ['', Validators.required]
     })
 
     this.formEspecialidad = this.fb.group({
@@ -91,9 +95,35 @@ export class RegistroComponent implements OnInit
     })
   }
 
+  ejecutarCaptchaEspecialista(token: any)
+  {
+    this.formEspecialista.patchValue({
+      captcha: token
+    });
+  }
+
+  ejecutarCaptchaPaciente(token: any)
+  {
+    this.formPaciente.patchValue({
+      captcha: token
+    });
+  }
+
+  mostrarSpinner()
+  {
+    this.claseSpinner = "spinner-activado";
+  }
+
+  ocultarSpinner()
+  {
+    this.claseSpinner = "spinner-desactivado";
+  }
+
   cambiarTipoRegistro(tipoRegistro: string)
   {
     this.tipoRegistro = tipoRegistro;
+    this.formEspecialidad.reset();
+    this.formPaciente.reset();
   }
 
   //ENVIAR FORMS _____________________________________________________________________________________________________________________________________________________
@@ -103,9 +133,7 @@ export class RegistroComponent implements OnInit
 
     if (this.formEspecialidad.valid)
     {
-      let especialidad: Especialidad = {
-        nombre: this.nombreEspecialidad?.value
-      }
+      let especialidad = this.nombreEspecialidad?.value;
       let especialidadExistente = false;
       this.especialidades.forEach(especialidad =>
       {
@@ -128,69 +156,68 @@ export class RegistroComponent implements OnInit
   enviarFormEspecialista()
   {
     if (this.formEspecialista.valid)
+    {
+      this.mostrarSpinner();
+
+      let especialista: Especialista = {
+        dni: this.dniEspecialista?.value,
+        nombre: this.nombreEspecialista?.value,
+        apellido: this.apellidoEspecialista?.value,
+        edad: this.edadEspecialista?.value,
+        especialidades: this.especialidadEspecialista?.value.split(", "),
+        mail: this.mailEspecialista?.value,
+        password: this.passwordEspecialista?.value
+      };
+
+      // Registro del usuario
+      this.authService.registerSinLogin(especialista.mail, especialista.password).then(response =>
       {
-        
+        console.log(response);
+        this.ocultarSpinner();
+        this.swal.mostrarMensajeExitoYNavegar("Cuenta creada con exito", "A continuación, debe verificar su mail y esperar que un administrador apruebe su cuenta. Revise su bandeja de entrada.", "bienvenida");
 
-        let especialista: Especialista = {
-          dni: this.dniEspecialista?.value,
-          nombre: this.nombreEspecialista?.value,
-          apellido: this.apellidoEspecialista?.value,
-          edad: this.edadEspecialista?.value,
-          especialidades: [
-            {
-              nombre: this.especialidadEspecialista?.value
-            }
-          ],
-          mail: this.mailEspecialista?.value,
-          password: this.passwordEspecialista?.value
-        };
-  
-        // Registro del usuario
-        this.authService.registerSinLogin(especialista.mail, especialista.password).then(response =>
+        // Enviar verificación de mail
+        const auth = getAuth();
+        sendEmailVerification(getAuth(this.authService.secondaryApp).currentUser!).then(() =>
         {
-          console.log(response);
-          this.swal.mostrarMensajeExitoYNavegar("Cuenta creada con exito", "A continuación, debe verificar su mail y esperar que un administrador apruebe su cuenta. Revise su bandeja de entrada.", "bienvenida");
-  
-          // Enviar verificación de mail
-          const auth = getAuth();
-          sendEmailVerification(getAuth(this.authService.secondaryApp).currentUser!).then(() =>
-          {
-            console.log('Verificacion de email enviada');
-          }).catch(error =>
-          {
-            console.log('Error enviando la verificacion de email:', error);
-          });
-  
-          // Subir imágenes a Firebase Storage
-
-          this.storageService.subirImagen(this.eventoImagenEsp, 'especialistas/' + especialista.mail).then(() =>
-          {
-            console.log('La imagene se subió correctamente.');
-            // Guardar datos del especialista en Firestore
-            this.especialistasService.guardarEspecialista(especialista);
-            // Reseteo de eventos de las imágenes
-            this.limpiarEventosImagen();
-            // Reseteo del formulario
-            this.formPaciente.reset();
-            this.formEspecialista.reset();
-          }).catch(error =>
-          {
-            console.log('Error al subir las imagenes:', error);
-          });
+          console.log('Verificacion de email enviada');
         }).catch(error =>
         {
-          console.log(error);
-          this.swal.mostrarMensajeError("Error", this.authService.traducirErrorCode(error.code));
+          console.log('Error enviando la verificacion de email:', error);
         });
-      } else
+
+        // Subir imágenes a Firebase Storage
+
+        this.storageService.subirImagen(this.eventoImagenEsp, 'especialistas/' + especialista.mail).then(() =>
+        {
+          console.log('La imagene se subió correctamente.');
+          // Guardar datos del especialista en Firestore
+          this.especialistasService.guardarEspecialista(especialista);
+          // Reseteo de eventos de las imágenes
+          this.limpiarEventosImagen();
+          // Reseteo del formulario
+          this.formPaciente.reset();
+          this.formEspecialista.reset();
+        }).catch(error =>
+        {
+          console.log('Error al subir las imagenes:', error);
+        });
+      }).catch(error =>
       {
-        this.formEspecialista.markAllAsTouched();
-      }
+        this.ocultarSpinner();
+        console.log(error);
+        this.swal.mostrarMensajeError("Error", this.authService.traducirErrorCode(error.code));
+      });
+    } else
+    {
+      this.formEspecialista.markAllAsTouched();
+    }
   }
   enviarFormPaciente()
   {
     if (this.formPaciente.valid)
     {
+      this.mostrarSpinner();
       let paciente: Paciente = {
         dni: this.dniPaciente?.value,
         nombre: this.nombrePaciente?.value,
@@ -204,24 +231,25 @@ export class RegistroComponent implements OnInit
       // Registro del usuario
       this.authService.registerSinLogin(paciente.mail, paciente.password).then(response =>
       {
+        this.ocultarSpinner();
         console.log(response);
         this.swal.mostrarMensajeExitoYNavegar("Cuenta creada con exito", "A continuación, debe verificar su mail. Revise su bandeja de entrada.", "bienvenida");
-        
+
         // Enviar verificación de mail
         const auth = getAuth();
         sendEmailVerification(getAuth(this.authService.secondaryApp).currentUser!).then(() =>
-          {
-            console.log('Verificacion de email enviada');
-            this.authService.LogOut();
-          }).catch(error =>
-            {
-              console.log('Error enviando la verificacion de email:', error);
-              this.authService.LogOut();
+        {
+          console.log('Verificacion de email enviada');
+          this.authService.LogOut();
+        }).catch(error =>
+        {
+          console.log('Error enviando la verificacion de email:', error);
+          this.authService.LogOut();
 
-            });
-            
-            // Subir imágenes a Firebase Storage
-            const promesasUpload = [];
+        });
+
+        // Subir imágenes a Firebase Storage
+        const promesasUpload = [];
         promesasUpload.push(this.storageService.subirImagen(this.eventoImagen1, 'pacientes/' + paciente.mail + '/1'));
         promesasUpload.push(this.storageService.subirImagen(this.eventoImagen2, 'pacientes/' + paciente.mail + '/2'));
 
@@ -241,6 +269,7 @@ export class RegistroComponent implements OnInit
         });
       }).catch(error =>
       {
+        this.ocultarSpinner();
         console.log(error);
         this.swal.mostrarMensajeError("Error", this.authService.traducirErrorCode(error.code));
       });
@@ -252,11 +281,37 @@ export class RegistroComponent implements OnInit
 
 
   //SELECCIONAR ESPECIALIDAD________________________________________________________________________________________________________________________________________________
-  seleccionarEspecialidad(especialidad: Especialidad)
+  seleccionarEspecialidad(especialidad: string)
   {
-    this.formEspecialista.patchValue({
-      especialidad: especialidad.nombre,
-    });
+    const especialidadesActuales = this.especialidadEspecialista?.value;
+
+    if (especialidadesActuales != "")
+    {
+      const especialidadesLista = especialidadesActuales.split(", ");
+
+      if (especialidadesLista.includes(especialidad))
+      {
+        return;
+      }
+
+      if (especialidad == "")
+      {
+        this.formEspecialista.patchValue({
+          especialidad: especialidad
+        });
+      } else
+      {
+        this.formEspecialista.patchValue({
+          especialidad: (especialidadesActuales + ", " + especialidad),
+        });
+      }
+    } else
+    {
+      this.formEspecialista.patchValue({
+        especialidad: especialidad
+      });
+    }
+
   }
 
 

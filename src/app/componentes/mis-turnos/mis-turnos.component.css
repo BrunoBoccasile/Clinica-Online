@@ -1,0 +1,29 @@
+:host {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: rgb(88,164,176);
+    background: linear-gradient(90deg, rgba(88,164,176,1) 0%, rgba(216,219,226,1) 35%, rgba(163,240,153,1) 100%);
+}
+
+.card-mis-turnos{
+    min-height: 80%;
+    border-radius: 3rem;
+}
+
+.spinner-activado {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.spinner-desactivado{
+    display: none;
+}

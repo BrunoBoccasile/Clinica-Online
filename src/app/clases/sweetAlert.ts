@@ -54,6 +54,19 @@ export class SweetAlert{
       });
     }
 
+    public mostrarMensajeConfirmar(titulo: string, mensaje: string)
+    {
+      return Swal.fire({
+        title: titulo,
+        text: mensaje,
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Sí",
+        cancelButtonText: "No"
+      });
+    }
 }
 export declare function provideSwal(fn: (injector: Injector) => SweetAlert, ...deps: any[]): EnvironmentProviders;
 
