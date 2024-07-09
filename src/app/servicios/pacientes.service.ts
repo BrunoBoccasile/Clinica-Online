@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Firestore, addDoc, collection, collectionData, deleteDoc, doc, getDoc, getDocs, query, where } from '@angular/fire/firestore';
-import { BehaviorSubject, Subscription } from 'rxjs';
+import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 import { Paciente } from '../entidades/paciente';
 
 @Injectable({
@@ -37,7 +37,9 @@ export class PacientesService
       nombre: paciente.nombre,
       apellido: paciente.apellido,
       edad: paciente.edad,
-      obraSocial: paciente.obraSocial
+      obraSocial: paciente.obraSocial,
+      urlImagen1: paciente.urlImagen1,
+      urlImagen2: paciente.urlImagen2
     }).then(() =>
     {
       console.log('Paciente guardado con éxito');
@@ -130,22 +132,10 @@ export class PacientesService
       return getDocs(q);
   }
 
-  // esPaciente(email: string): Promise<boolean>
-  // {
-  //   return new Promise((resolve, reject) => {
-  //     const q = query(collection(this.firestore, "pacientes"), where("mail", "==", email));
+  getPacientes(): Observable<Paciente[]>
+  {
+    let col = collection(this.firestore, 'pacientes');
+    return collectionData(col, {idField: 'id'}) as Observable<Paciente[]>;
+  }
 
-  //     return getDocs(q).then((querySnapshot) =>
-  //       {
-  //       let esPaciente = false;
-  //       querySnapshot.forEach((doc) =>
-  //       {
-  //         esPaciente = true;
-  //       });
-  //       resolve(esPaciente);
-  //     }).catch(error => {
-  //       reject(error);
-  //     });
-  //   });
-  // }
 }

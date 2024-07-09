@@ -1,0 +1,78 @@
+<app-spinner [ngClass]="claseSpinner"></app-spinner>
+
+@if (turnos && paciente && especialidadSeleccionada) {
+    <button class="btn btn-danger btn-g mx-auto m-4 w-25" (click)="downloadPDF()">Descargar PDF</button>
+    <div class="informe-container" id="htmlData">
+        <div class="informe-header">
+            <h4 class="fecha-actual">{{fechaActual}}</h4>
+            <h3 class="titulo-informe display-5 m-4 text-center">{{tituloInforme}}</h3>
+            <img class="logo" src="./../../../assets/logo.png" alt="Logo">
+        </div>
+
+        @for (turno of turnos; track $index) {
+            @if (turno.idPaciente == paciente.id && turno.especialidad == especialidadSeleccionada) {
+                <div class="card p-2 m-4">
+                    <h1 class="card-title text-center">
+                        Esp. {{turno.nombreEspecialista}} {{turno.apellidoEspecialista}}
+                    </h1>
+
+                    <h4 class="card-subtitle mb-2 text-muted text-center">
+                        {{turno.fecha}} {{turno.hora | minutosAHoraPipe}}
+                    </h4>
+
+                    @if (turno.historiaClinica) 
+                    {
+
+                        @for (key of objectKeys(turno.historiaClinica); track $index) {
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item rounded-3 my-1">
+                                    <h4>{{ key | capitalizePipe }}: {{ turno.historiaClinica[key] }}</h4>
+                                </li>
+                            </ul>
+                        }
+                    }
+                </div>
+            }
+        }
+    </div>
+}
+
+<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="staticBackdropLabel" aria-hidden="true" #modalEspecialidades>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            @if (turnos) 
+            {
+
+                @if (turnos.length > 0) 
+                {
+                    
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="staticBackdropLabel">Seleccione una especialidad</h1>
+                        <button type="button" class="btn-close" disabled data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="list-group">
+                            <button type="button" disabled class="list-group-item list-group-item-action active"
+                            aria-current="true">
+                            Especialidades
+                        </button>
+                        @for (especialidad of especialidades; track $index)
+                        {
+                            <button type="button" class="list-group-item list-group-item-action"
+                            data-bs-dismiss="modal" (click)="seleccionarEspecialidad(especialidad)">{{especialidad}}</button>
+                        }
+                    </div>
+                </div>
+            }
+            @else {
+                <div class="d-flex justify-content-center align-items-center w-100 h-100 p-4">
+                    <div class="card bg-danger p-3 m-4">
+                        <h3 class="text-white">No tiene turnos realizados</h3>
+                    </div>
+                </div>
+            }
+        }
+        </div>
+    </div>
+</div>

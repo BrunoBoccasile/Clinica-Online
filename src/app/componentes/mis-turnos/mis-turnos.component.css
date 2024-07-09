@@ -27,3 +27,24 @@
 .spinner-desactivado{
     display: none;
 }
+
+.btn-sumar-datos {
+    height: 40px;
+    width: 40px;
+    border: none;
+    --bs-btn-color: #ffffff;
+    --bs-btn-bg: #1ca1b6;
+    --bs-btn-hover-color: #ffffff;
+    --bs-btn-hover-bg: #188c9e;
+    --bs-btn-active-color: #ffffff;
+    --bs-btn-active-bg: #157786;
+    --bs-btn-active-border-color: #157786;
+    --bs-btn-disabled-border-color: #157786;
+    --bs-btn-disabled-color: #ffffff;
+    --bs-btn-disabled-bg: #157786;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 3rem;
+    padding: 0.2rem;
+}

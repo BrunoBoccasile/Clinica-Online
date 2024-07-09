@@ -7,7 +7,7 @@ import { getAuth, provideAuth } from '@angular/fire/auth';
 import { getFirestore, provideFirestore } from '@angular/fire/firestore';
 import { getStorage, provideStorage } from '@angular/fire/storage';
 import { RECAPTCHA_V3_SITE_KEY, RecaptchaV3Module } from 'ng-recaptcha';
-
+import { provideAnimations } from '@angular/platform-browser/animations'
 export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(routes), 
@@ -18,6 +18,7 @@ export const appConfig: ApplicationConfig = {
      importProvidersFrom(
       RecaptchaV3Module
      ),
-    {provide: RECAPTCHA_V3_SITE_KEY, useValue: "6LdmAAgqAAAAAIbJMLkxOZylxD4SzAg0T-8ZYTEI"}
+    {provide: RECAPTCHA_V3_SITE_KEY, useValue: "6LdmAAgqAAAAAIbJMLkxOZylxD4SzAg0T-8ZYTEI"},
+    provideAnimations()
     ]
 };

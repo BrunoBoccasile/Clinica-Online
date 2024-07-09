@@ -15,7 +15,9 @@ button {
     --bs-btn-active-bg: #157786;
     --bs-btn-active-border-color: #157786;
 }
-
+#contenedor-1 {
+    transition: transform 1s, opacity 1s;
+  }
 #cuenta-registrada {
     color: rgb(106, 123, 126);
 }

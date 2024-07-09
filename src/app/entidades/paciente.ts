@@ -6,5 +6,7 @@ export interface Paciente{
     edad: number,
     obraSocial: string,
     mail: string,
-    password: string
+    password: string,
+    urlImagen1: string,
+    urlImagen2: string
 }

@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, viewChild, ViewChild } from '@angular/core';
 import { AuthService } from '../../servicios/auth.service';
 import { PacientesService } from '../../servicios/pacientes.service';
 import { AdministradoresService } from '../../servicios/administradores.service';
@@ -16,20 +16,23 @@ import { Router } from '@angular/router';
 import { MinutosAHoraPipePipe } from '../../pipes/minutos-a-hora-pipe.pipe';
 import { Disponibilidad } from '../../entidades/disponibilidad';
 import { Especialidad } from '../../entidades/especialidad';
+import { TurnosService } from '../../servicios/turnos.service';
+import { CapitalizePipePipe } from '../../pipes/capitalize-pipe.pipe';
 @Component({
   selector: 'app-mi-perfil',
   standalone: true,
-  imports: [SpinnerComponent, NgIf, ArrayToStringPipePipe, ReactiveFormsModule, FormsModule, MinutosAHoraPipePipe, NgClass],
+  imports: [SpinnerComponent, NgIf, ArrayToStringPipePipe, ReactiveFormsModule, FormsModule, MinutosAHoraPipePipe, NgClass, CapitalizePipePipe],
   templateUrl: './mi-perfil.component.html',
   styleUrl: './mi-perfil.component.css'
 })
-export class MiPerfilComponent implements OnInit
+export class MiPerfilComponent implements OnInit, OnDestroy
 {
   usuarioActual: any;
   imagenActual: string;
   imagenActual2: string;
   @ViewChild('modalCargarDisponibilidad') modalCargarDisponibilidad!: ElementRef;
   @ViewChild('modalAgregarEspecialidad') modalAgregarEspecialidad!: ElementRef;
+  @ViewChild('modalHistoriaClinica') modalHistoriaClinica!: ElementRef;
   obtenerEspecialidadesSub!: Subscription;
   especialidades: Array<Especialidad> = [];
   especialidadesObtenidas: boolean = false;
@@ -40,8 +43,10 @@ export class MiPerfilComponent implements OnInit
   dias: Array<string> = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
   horarios: Array<number> = [];
   claseSpinner: string = "spinner-desactivado";
-
-  constructor(public router: Router, public fb: FormBuilder, public especialidadesService: EspecialidadesService, public storageService: StorageService, public authService: AuthService, public administradoresService: AdministradoresService, public pacientesService: PacientesService, public especialistasService: EspecialistasService)
+  turnos!: Array<any> | null;
+  suscripcionTurnos!: Subscription;
+  tieneHistoriaClinica = false;
+  constructor(public turnosService: TurnosService, public router: Router, public fb: FormBuilder, public especialidadesService: EspecialidadesService, public storageService: StorageService, public authService: AuthService, public administradoresService: AdministradoresService, public pacientesService: PacientesService, public especialistasService: EspecialistasService)
   {
     this.imagenActual = "";
     this.imagenActual2 = "";
@@ -63,6 +68,13 @@ export class MiPerfilComponent implements OnInit
     }
   }
 
+  ngOnDestroy(): void
+  {
+    if(this.suscripcionTurnos)
+    {
+      this.suscripcionTurnos.unsubscribe();
+    }
+  }
   mostrarSpinner()
   {
     this.claseSpinner = "spinner-activado";
@@ -72,6 +84,11 @@ export class MiPerfilComponent implements OnInit
   {
     this.claseSpinner = "spinner-desactivado";
   }
+
+  objectKeys(obj: any) {
+    return Object.keys(obj);
+}
+
 
   cargarDatos()
   {
@@ -111,6 +128,11 @@ export class MiPerfilComponent implements OnInit
                 this.imagenActual2 = url2;
               }
             })
+            this.suscripcionTurnos = this.turnosService.obtenerTurnosByField('idPaciente', response?.id).subscribe({
+              next: ((turnos) => {
+                this.turnos = turnos;
+              })
+            });
           });
 
           break;
@@ -153,7 +175,37 @@ export class MiPerfilComponent implements OnInit
     const modal: any = new Modal(this.modalAgregarEspecialidad.nativeElement);
     modal.show();
   }
+  mostrarModalHistoriaClinica()
+  {
+    this.tieneHistoriaClinica = false;
+    if(this.turnos)
+    {
 
+      for(let i=0 ; i<this.turnos.length ; i++)
+      {
+        if(this.turnos[i].historiaClinica)
+          {
+            this.tieneHistoriaClinica = true;
+            break;
+          }
+        }
+    }
+    else
+    {
+      this.tieneHistoriaClinica = false;
+    }
+      const modal: any = new Modal(this.modalHistoriaClinica.nativeElement);
+    modal.show();
+  }
+
+  descargarPDF()
+  {
+    window.open('pdf-historia-clinica');
+  }
+  descargarAtenciones()
+  {
+    window.open('pdf-atenciones');
+  }
   enviarFormEspecialidad()
   {
     if (this.formEspecialidad.valid)

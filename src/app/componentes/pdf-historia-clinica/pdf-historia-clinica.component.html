@@ -1,0 +1,34 @@
+<app-spinner [ngClass]="claseSpinner"></app-spinner>
+
+@if (turnos && paciente) {
+    <button class="btn btn-danger btn-g mx-auto m-4 w-25" (click)="downloadPDF()">Descargar PDF</button>
+    <div class="informe-container" id="htmlData">
+        <div class="informe-header">
+            <h2 class="fecha-actual">{{fechaActual}}</h2>
+            <h1 class="titulo-informe display-5  m-4 text-center">{{tituloInforme}}</h1>
+            <img class="logo" src="./../../../assets/logo.png" alt="Logo">
+        </div>
+
+        @for (turno of turnos; track $index) {
+            @if (turno.idPaciente == paciente.id && turno.historiaClinica) {
+                <div class="card p-2 m-4">
+                    <h1 class="card-title text-center">
+                        {{turno.especialidad}} | {{turno.fecha}}
+                    </h1>
+
+                    <h4 class="card-subtitle mb-2 text-muted text-center">
+                        Esp. {{turno.nombreEspecialista}} {{turno.apellidoEspecialista}}
+                    </h4>
+
+                    @for (key of objectKeys(turno.historiaClinica); track $index) {
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item rounded-3 my-1">
+                                <h4>{{ key | capitalizePipe }}: {{ turno.historiaClinica[key] }}</h4>
+                            </li>
+                        </ul>
+                    }
+                </div>
+            }
+        }
+    </div>
+}

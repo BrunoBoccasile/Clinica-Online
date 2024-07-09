@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { TablaPacientesComponent } from '../tabla-pacientes/tabla-pacientes.component';
 import { TablaEspecialistasComponent } from '../tabla-especialistas/tabla-especialistas.component';
 import { Modal } from 'bootstrap'
@@ -21,15 +21,18 @@ import { AdministradoresService } from '../../servicios/administradores.service'
 import { TablaAdministradoresComponent } from '../tabla-administradores/tabla-administradores.component';
 import { Especialidad } from '../../entidades/especialidad';
 import { NgClass } from '@angular/common';
+import { getDownloadURL } from '@angular/fire/storage';
+import { TurnosService } from '../../servicios/turnos.service';
+import { CapitalizePipePipe } from '../../pipes/capitalize-pipe.pipe';
 
 @Component({
   selector: 'app-gestion-usuarios',
   standalone: true,
-  imports: [TablaPacientesComponent, TablaEspecialistasComponent, ReactiveFormsModule, SpinnerComponent, TablaAdministradoresComponent, NgClass],
+  imports: [TablaPacientesComponent, TablaEspecialistasComponent, ReactiveFormsModule, SpinnerComponent, TablaAdministradoresComponent, NgClass, CapitalizePipePipe],
   templateUrl: './gestion-usuarios.component.html',
   styleUrl: './gestion-usuarios.component.css'
 })
-export class GestionUsuariosComponent implements OnInit
+export class GestionUsuariosComponent implements OnInit, OnDestroy
 {
   idEspecialistaSeleccionado: string;
   idPacienteSeleccionado: string;
@@ -61,7 +64,9 @@ export class GestionUsuariosComponent implements OnInit
   imagenAdministradorSeleccionado: string;
   administradorSeleccionadoCargado: boolean;
   claseSpinner = "spinner-desactivado";
-  constructor(public administradoresService: AdministradoresService, public especialidadesService: EspecialidadesService, public fb: FormBuilder, public especialistasService: EspecialistasService, public authService: AuthService, public router: Router, public storageService: StorageService, public pacientesService: PacientesService)
+  suscripcionTurnos!: Subscription;
+  turnosPaciente!: Array<any>;
+  constructor(public turnosService: TurnosService, public administradoresService: AdministradoresService, public especialidadesService: EspecialidadesService, public fb: FormBuilder, public especialistasService: EspecialistasService, public authService: AuthService, public router: Router, public storageService: StorageService, public pacientesService: PacientesService)
   {
     this.imagen1PacienteSeleccionado = "";
     this.imagen2PacienteSeleccionado = "";
@@ -132,10 +137,15 @@ export class GestionUsuariosComponent implements OnInit
       }
     })
 
-
-
   }
 
+  ngOnDestroy(): void
+  {
+    if(this.suscripcionTurnos)
+    {
+      this.suscripcionTurnos.unsubscribe();
+    }
+  }
   mostrarSpinner()
   {
     this.claseSpinner = "spinner-activado";
@@ -162,7 +172,7 @@ export class GestionUsuariosComponent implements OnInit
         if (url)
         {
           this.imagenEspecialistaSeleccionado = url;
-          this.pacienteSeleccionadoCargado = true;
+          this.especialistaSeleccionadoCargado = true;
         }
       });
     })
@@ -218,6 +228,10 @@ export class GestionUsuariosComponent implements OnInit
     this.mostrarModalPacienteSeleccionado();
   }
 
+  objectKeys(obj: any) {
+    return Object.keys(obj);
+}
+
   mostrarModalEspecialistaSeleccionado()
   {
     const modal: any = new Modal(this.modalEspecialistaSeleccionado.nativeElement);
@@ -232,8 +246,19 @@ export class GestionUsuariosComponent implements OnInit
 
   mostrarModalPacienteSeleccionado()
   {
+    this.mostrarSpinner();
+    if(this.suscripcionTurnos)
+    {
+      this.suscripcionTurnos.unsubscribe();
+    }
+    this.suscripcionTurnos = this.turnosService.obtenerTurnosByField('idPaciente', this.idPacienteSeleccionado).subscribe({
+      next: (res) => {
+        this.turnosPaciente = res;
+        this.ocultarSpinner();
+      }})
     const modal: any = new Modal(this.modalPacienteSeleccionado.nativeElement);
     modal.show();
+
   }
 
   aprobarEspecialista(id: string)
@@ -406,18 +431,8 @@ export class GestionUsuariosComponent implements OnInit
     if (this.formPaciente.valid)
     {
       this.mostrarSpinner();
-      let paciente: Paciente = {
-        dni: this.dniPaciente?.value,
-        nombre: this.nombrePaciente?.value,
-        apellido: this.apellidoPaciente?.value,
-        edad: this.edadPaciente?.value,
-        obraSocial: this.obraSocialPaciente?.value,
-        mail: this.mailPaciente?.value,
-        password: this.passwordPaciente?.value
-      };
-
       // Registro del usuario
-      this.authService.registerSinLogin(paciente.mail, paciente.password).then(response =>
+      this.authService.registerSinLogin(this.mailPaciente?.value, this.passwordPaciente?.value).then(response =>
       {
         this.ocultarSpinner();
 
@@ -435,20 +450,40 @@ export class GestionUsuariosComponent implements OnInit
 
         // Subir imágenes a Firebase Storage
         const promesasUpload = [];
-        promesasUpload.push(this.storageService.subirImagen(this.eventoImagen1, 'pacientes/' + paciente.mail + '/1'));
-        promesasUpload.push(this.storageService.subirImagen(this.eventoImagen2, 'pacientes/' + paciente.mail + '/2'));
+        promesasUpload.push(this.storageService.subirImagen(this.eventoImagen1, 'pacientes/' + this.mailPaciente?.value + '/1'));
+        promesasUpload.push(this.storageService.subirImagen(this.eventoImagen2, 'pacientes/' + this.mailPaciente?.value + '/2'));
 
-        Promise.all(promesasUpload).then(() =>
+        Promise.all(promesasUpload).then((uploadResults) =>
         {
-          console.log('Las imagenes se subieron correctamente.');
-          // Guardar datos del paciente en Firestore
-          this.pacientesService.guardarPaciente(paciente);
-          // Reseteo de eventos de las imágenes
-          this.limpiarEventosImagen();
-          // Reseteo del formulario
-          this.formPaciente.reset();
-          this.formEspecialista.reset();
-          this.formAdministrador.reset();
+          const [uploadResult1, uploadResult2] = uploadResults;
+
+          const promesasGetDownloadUrl = [];
+          promesasGetDownloadUrl.push(getDownloadURL(uploadResult1.ref));
+          promesasGetDownloadUrl.push(getDownloadURL(uploadResult2.ref));
+
+          Promise.all(promesasGetDownloadUrl).then((urlImagenes) => {
+            const [urlImagen1, urlImagen2] = urlImagenes;
+            let paciente: Paciente = {
+              dni: this.dniPaciente?.value,
+              nombre: this.nombrePaciente?.value,
+              apellido: this.apellidoPaciente?.value,
+              edad: this.edadPaciente?.value,
+              obraSocial: this.obraSocialPaciente?.value,
+              mail: this.mailPaciente?.value,
+              password: this.passwordPaciente?.value,
+              urlImagen1: urlImagen1,
+              urlImagen2: urlImagen2
+            };
+            console.log('Las imagenes se subieron correctamente.');
+            // Guardar datos del paciente en Firestore
+            this.pacientesService.guardarPaciente(paciente);
+            // Reseteo de eventos de las imágenes
+            this.limpiarEventosImagen();
+            // Reseteo del formulario
+            this.formPaciente.reset();
+            this.formEspecialista.reset();
+          })
+            
 
         }).catch(error =>
         {

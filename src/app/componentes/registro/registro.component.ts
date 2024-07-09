@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { tipoArchivoValidator } from '../../validators/tipoarchivo';
 import { EspecialidadesService } from '../../servicios/especialidades.service';
 import { Subscription } from 'rxjs';
-import { Storage } from '@angular/fire/storage';
+import { getDownloadURL, Storage } from '@angular/fire/storage';
 import { Paciente } from '../../entidades/paciente';
 import { PacientesService } from '../../servicios/pacientes.service';
 import { AuthService } from '../../servicios/auth.service';
@@ -18,12 +18,27 @@ import { SweetAlert } from '../../clases/sweetAlert';
 import { Especialidad } from '../../entidades/especialidad';
 import { NgClass } from '@angular/common';
 import { RecaptchaModule, ReCaptchaV3Service } from 'ng-recaptcha';
+import { animate, state, style, transition, trigger } from '@angular/animations';
 @Component({
   selector: 'app-registro',
   standalone: true,
   imports: [ReactiveFormsModule, SpinnerComponent, NgClass, RecaptchaModule],
   templateUrl: './registro.component.html',
-  styleUrl: './registro.component.css'
+  styleUrl: './registro.component.css',
+  animations: [
+    trigger('abajoHaciaArriba', [
+      state('abajo', style({
+        transform: 'translateY(100%)',
+        opacity: 0.8,
+        overflow: '0'
+      })),
+      state('arriba', style({
+        transform: 'translateY(0)',
+        opacity: 1
+      })),
+      transition('abajo => arriba', [animate('0.7s')]),
+    ])
+  ]
 })
 export class RegistroComponent implements OnInit
 {
@@ -43,6 +58,7 @@ export class RegistroComponent implements OnInit
   eventoImagenEsp: any;
   claseSpinner = "spinner-desactivado";
   swal: SweetAlert = new SweetAlert(this.router);
+  estadoAnimacion = 'abajo';
   constructor(private fb: FormBuilder, public especialidadesService: EspecialidadesService, public storage: Storage, public pacientesService: PacientesService, public especialistasService: EspecialistasService, public authService: AuthService, public storageService: StorageService, public router: Router)
   {
     this.tipoRegistro = "";
@@ -53,7 +69,10 @@ export class RegistroComponent implements OnInit
 
   ngOnInit(): void
   {
-
+    setTimeout(() => {
+      this.estadoAnimacion = 'arriba';
+      
+    }, 0.5);
     this.formPaciente = this.fb.group({
       dni: ['', [Validators.min(1000000), Validators.required]],
       nombre: ['', [Validators.pattern("^[A-Za-zÁÉÍÓÚáéíóúÑñÜü -]{1,50}$"), Validators.required]],
@@ -218,18 +237,10 @@ export class RegistroComponent implements OnInit
     if (this.formPaciente.valid)
     {
       this.mostrarSpinner();
-      let paciente: Paciente = {
-        dni: this.dniPaciente?.value,
-        nombre: this.nombrePaciente?.value,
-        apellido: this.apellidoPaciente?.value,
-        edad: this.edadPaciente?.value,
-        obraSocial: this.obraSocialPaciente?.value,
-        mail: this.mailPaciente?.value,
-        password: this.passwordPaciente?.value
-      };
+
 
       // Registro del usuario
-      this.authService.registerSinLogin(paciente.mail, paciente.password).then(response =>
+      this.authService.registerSinLogin(this.mailPaciente?.value, this.passwordPaciente?.value).then(response =>
       {
         this.ocultarSpinner();
         console.log(response);
@@ -250,19 +261,40 @@ export class RegistroComponent implements OnInit
 
         // Subir imágenes a Firebase Storage
         const promesasUpload = [];
-        promesasUpload.push(this.storageService.subirImagen(this.eventoImagen1, 'pacientes/' + paciente.mail + '/1'));
-        promesasUpload.push(this.storageService.subirImagen(this.eventoImagen2, 'pacientes/' + paciente.mail + '/2'));
+        promesasUpload.push(this.storageService.subirImagen(this.eventoImagen1, 'pacientes/' + this.mailPaciente?.value + '/1'));
+        promesasUpload.push(this.storageService.subirImagen(this.eventoImagen2, 'pacientes/' + this.mailPaciente?.value + '/2'));
 
-        Promise.all(promesasUpload).then(() =>
+        Promise.all(promesasUpload).then((uploadResults) =>
         {
-          console.log('Las imagenes se subieron correctamente.');
-          // Guardar datos del paciente en Firestore
-          this.pacientesService.guardarPaciente(paciente);
-          // Reseteo de eventos de las imágenes
-          this.limpiarEventosImagen();
-          // Reseteo del formulario
-          this.formPaciente.reset();
-          this.formEspecialista.reset();
+          const [uploadResult1, uploadResult2] = uploadResults;
+
+          const promesasGetDownloadUrl = [];
+          promesasGetDownloadUrl.push(getDownloadURL(uploadResult1.ref));
+          promesasGetDownloadUrl.push(getDownloadURL(uploadResult2.ref));
+
+          Promise.all(promesasGetDownloadUrl).then((urlImagenes) => {
+            const [urlImagen1, urlImagen2] = urlImagenes;
+            let paciente: Paciente = {
+              dni: this.dniPaciente?.value,
+              nombre: this.nombrePaciente?.value,
+              apellido: this.apellidoPaciente?.value,
+              edad: this.edadPaciente?.value,
+              obraSocial: this.obraSocialPaciente?.value,
+              mail: this.mailPaciente?.value,
+              password: this.passwordPaciente?.value,
+              urlImagen1: urlImagen1,
+              urlImagen2: urlImagen2
+            };
+            console.log('Las imagenes se subieron correctamente.');
+            // Guardar datos del paciente en Firestore
+            this.pacientesService.guardarPaciente(paciente);
+            // Reseteo de eventos de las imágenes
+            this.limpiarEventosImagen();
+            // Reseteo del formulario
+            this.formPaciente.reset();
+            this.formEspecialista.reset();
+          })
+            
         }).catch(error =>
         {
           console.log('Error al subir las imagenes:', error);

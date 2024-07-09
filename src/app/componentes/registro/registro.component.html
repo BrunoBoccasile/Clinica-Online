@@ -1,15 +1,15 @@
 <app-spinner [ngClass]="claseSpinner"></app-spinner>
 @if(authService.firebaseInicializado)
 {
-  <div class="container">
+  <div class="container" [@abajoHaciaArriba]="estadoAnimacion" >
     
     @if (!authService.auth.currentUser)
     {
       @if(tipoRegistro == "")
       {
-        <div class="d-flex flex-row h-100 justify-content-center align-items-center">
-          <button class="btn-paciente btn-paciente-grande m-4" (click)="cambiarTipoRegistro('paciente')"><img src="../../../assets/paciente.png"></button>
-          <button class="btn-doctor  btn-doctor-grande m-4" (click)="cambiarTipoRegistro('especialista')"><img src="../../../assets/doctor.png"></button>
+        <div class="d-flex flex-lg-row flex-column h-100 justify-content-center align-items-center">
+          <button class="btn-paciente  btn-paciente-grande m-4" (click)="cambiarTipoRegistro('paciente')"><img src="../../../assets/paciente.png"></button>
+          <button class="btn-doctor btn-doctor-grande m-4" (click)="cambiarTipoRegistro('especialista')"><img src="../../../assets/doctor.png"></button>
         </div>
       }
       @if (tipoRegistro == "paciente")

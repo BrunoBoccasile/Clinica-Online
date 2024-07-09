@@ -1,0 +1,133 @@
+<app-spinner [ngClass]="claseSpinner"></app-spinner>
+
+<div class="container d-flex align-items-center justify-content-center h-100">
+    <div class="m-4 card card-pacientes col-12 p-4">
+        <div class="flex-wrap d-flex align-items-center justify-content-center" style="max-height: 700px; overflow-y: auto;">
+            @if(pacientes && turnos)
+            {
+
+                @for (paciente of filtrarPacientes(); track paciente; let i=$index) 
+                {
+                    
+                    <div class="card m-4 border-primary" style="width: 18rem;">
+                        <div id="carouselExample{{i}}" class="carousel slide">
+                            <div class="carousel-inner">
+                              <div class="carousel-item active">
+                                <img src={{paciente.urlImagen1}} class="d-block w-100" alt="...">
+                              </div>
+                              <div class="carousel-item">
+                                <img src={{paciente.urlImagen2}} class="d-block w-100" alt="...">
+                              </div>
+                            </div>
+                            <button class="carousel-control-prev" type="button" [attr.data-bs-target]="'#carouselExample' + i" data-bs-slide="prev">
+                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Previous</span>
+                              </button>
+                              <button class="carousel-control-next" type="button" [attr.data-bs-target]="'#carouselExample' + i" data-bs-slide="next">
+                              <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                              <span class="visually-hidden">Next</span>
+                            </button>
+                          </div>
+                        <div class="card-body">
+                            <div class="card-title rounded-5 p-2  nombre-paciente">
+                                <h4 class="my-auto text-center" role="button" (click)="mostrarModalDetallePaciente(paciente)">{{paciente.nombre}} {{paciente.apellido}} </h4>
+                            </div>
+                            <div class="card-text">
+                                <h5>Últimas atenciones</h5>
+                                @for (turno of filtrarUltimosTresTurnos(paciente); track $index;) 
+                                {
+                                    <div class="card my-2">
+                                        <ul class="my-auto">
+                                            <li>
+                                                {{turno.fecha}} {{turno.hora | minutosAHoraPipe}}
+                                            </li>
+                                            <li>
+                                                {{turno.especialidad}}
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    }
+                            </div>
+                        </div>
+                        <div class="card-footer bg-transparent d-flex justify-content-center align-items-center">
+                            <button class="btn mx-auto" (click)="mostrarModalHistoriaClinica(paciente)">Historia clínica</button>
+                        </div>
+                        
+                    </div>
+                    
+                }
+                
+            }
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="staticBackdropLabel" aria-hidden="true" #modalHistoriaClinica>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="staticBackdropLabel">
+                    Historia clínica</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" style="overflow-y: auto; max-height: 450px;">
+                @if (pacientes && turnos && pacienteSeleccionado) 
+                    {
+
+                        @for (turno of turnos; track $index) 
+                        {
+                            @if(turno.idPaciente == pacienteSeleccionado.id && turno.idEspecialista == authService.usuarioLogeado.id && turno.historiaClinica)
+                            {
+                                <div class="card p-2 m-4" style="background-color: #C1CCD9;">
+
+                                <h3 class="card-title text-center">{{turno.especialidad}} | {{turno.fecha}}</h3>
+                                                                @for (key of objectKeys(turno.historiaClinica); track $index) 
+                                {
+                                    <ul class="list-group list-group-flush">
+                                        <li class="list-group-item rounded-3 my-1">
+                                            <strong>{{ key | capitalizePipe}}:</strong> {{ turno.historiaClinica[key] }}
+                                        </li>
+                                    </ul>
+                                    
+                                }
+                                </div>
+                            }
+                            
+                        }
+                    }
+                    
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="staticBackdropLabel" aria-hidden="true" #modalDetallePaciente>
+    <div class="modal-dialog">
+        @if (pacienteSeleccionado) 
+        {
+        <div class="modal-content">
+            <div class="modal-header">
+                
+                <h1 class="modal-title fs-5" id="staticBackdropLabel">
+                    {{pacienteSeleccionado.nombre}} {{pacienteSeleccionado.apellido}}</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" style="overflow-y: auto; max-height: 450px;">
+                <ul>
+                    <li>
+                        DNI: {{pacienteSeleccionado.dni}}
+                    </li>
+                    <li>
+                        Obra social: {{pacienteSeleccionado.obraSocial}}
+                    </li>
+                    <li>
+                        Edad: {{pacienteSeleccionado.edad}}
+                    </li>
+                </ul>
+            </div>
+        </div>
+    }
+    </div>
+</div>

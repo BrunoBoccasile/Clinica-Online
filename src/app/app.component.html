@@ -12,11 +12,11 @@
       @if(this.authService.firebaseInicializado)
       {
       <div class="collapse navbar-collapse" id="navbarNavDropdown">
-        <ul class="navbar-nav">
+        <ul class="navbar-nav me-auto">
           <li class="nav-item">
             <a class="nav-link"  routerLink='bienvenida'>Bienvenida</a>
           </li>
-          <li class="nav-item" *ngIf="this.authService.auth.currentUser">
+          <li class="nav-item" *ngIf="this.authService.usuarioLogeado">
             <a class="nav-link"  routerLink='mi-perfil'>Mi perfil</a>
           </li>
           <li class="nav-item" *ngIf="this.authService.tipoUsuario == 'administrador'">
@@ -25,19 +25,24 @@
           <li class="nav-item" *ngIf="this.authService.tipoUsuario == 'administrador' || this.authService.tipoUsuario == 'paciente'">
             <a class="nav-link"  routerLink='turnos/solicitar'>Solicitar turno</a>
           </li>
-          <li class="nav-item" *ngIf="this.authService.auth.currentUser">
+          <li class="nav-item" *ngIf="this.authService.tipoUsuario == 'paciente' || this.authService.tipoUsuario == 'especialista'">
             <a class="nav-link"  routerLink='turnos/mis-turnos'>Mis turnos</a>
           </li>
+          <li class="nav-item" *ngIf="this.authService.tipoUsuario == 'administrador'">
+            <a class="nav-link"  routerLink='turnos/mis-turnos'>Turnos</a>
+          </li>
+          <li class="nav-item" *ngIf="this.authService.tipoUsuario == 'especialista'">
+            <a class="nav-link"  routerLink='pacientes'>Pacientes</a>
+          </li>
         </ul>
-      </div>
         @if (this.authService.auth.currentUser) {
-          <button class="btn" (click)="logOut()">Cerrar sesión</button>
-  
+          <button class="btn mx-1" (click)="logOut()" >Cerrar sesión</button>
         }
         @else {
-          <button class="btn me-2" routerLink='registro'>Registrarse</button>
-          <button class="btn" routerLink='login'>Iniciar sesión</button>
+          <button class="btn mx-1" routerLink='registro'>Registrarse</button>
+          <button class="btn mx-1" routerLink='login'>Iniciar sesión</button>
         }
+      </div>
       }
     </div>
   </nav>

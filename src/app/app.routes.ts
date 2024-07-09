@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { adminGuardGuard } from './guards/admin-guard.guard';
 import { pacienteGuardGuard } from './guards/paciente-guard.guard';
 import { logeadoGuardGuard } from './guards/logeado-guard.guard';
+import { especialistaGuardGuard } from './guards/especialista-guard.guard';
 
 export const routes: Routes = [
     { path: '', redirectTo: '/bienvenida', pathMatch: "full" },
@@ -35,5 +36,18 @@ export const routes: Routes = [
     {
         path: 'turnos/mis-turnos',
         loadComponent: () => import('./componentes/mis-turnos/mis-turnos.component').then(m => m.MisTurnosComponent)
+    },
+    {
+        path: 'pacientes',
+        loadComponent: () => import('./componentes/pacientes/pacientes.component').then(m => m.PacientesComponent),
+        canActivate: [especialistaGuardGuard]
+    },
+    {
+        path: 'pdf-historia-clinica',
+        loadComponent: () => import('./componentes/pdf-historia-clinica/pdf-historia-clinica.component').then(m => m.PdfHistoriaClinicaComponent)
+    },
+    {
+        path: 'pdf-atenciones',
+        loadComponent: () => import('./componentes/pdf-atenciones/pdf-atenciones.component').then(m => m.PdfAtencionesComponent)
     }
 ];

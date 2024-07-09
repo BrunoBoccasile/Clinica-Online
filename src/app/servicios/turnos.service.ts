@@ -48,15 +48,21 @@ export class TurnosService {
     });
   }
 
-  obtenerTurnos()
+  // obtenerTurnos()
+  // {
+  //   let col = collection(this.firestore, 'turnos');
+  //   const observable = collectionData(col, {idField: 'id'});
+
+  //   this.sub = observable.subscribe((respuesta) =>{
+  //     this.coleccionTurnos= respuesta;
+  //     this.obtenerTurnosSubject.next(true);
+  //   })
+  // }
+
+  getTurnos()
   {
     let col = collection(this.firestore, 'turnos');
-    const observable = collectionData(col, {idField: 'id'});
-
-    this.sub = observable.subscribe((respuesta) =>{
-      this.coleccionTurnos= respuesta;
-      this.obtenerTurnosSubject.next(true);
-    })
+    return collectionData(col, {idField: 'id'});
   }
 
   obtenerTurnosByField(field: string, value: any)
@@ -118,28 +124,23 @@ export class TurnosService {
     const filteredQuery = query(collection(this.firestore, 'turnos'), ...conditions);
     return collectionData(filteredQuery, { idField: 'id' });
   }
-  // obtenerTurnosPorPacienteYFields(idPaciente: string, fields: string[], values: string[])
-  // {
-  //   if (fields.length !== values.length) {
-  //     throw new Error('El número de campos y valores debe ser igual.');
-  //   }
+
+  obtenerTurnosPorFields(fields: string[], values: string[])
+  {
+    if (fields.length !== values.length) {
+      throw new Error('El número de campos y valores debe ser igual.');
+    }
   
-  //   const conditions = [
-  //     where('idPaciente', '==', idPaciente)
-  //   ];
+    const conditions = [];
   
-  //   for (let i = 0; i < fields.length; i++) {
-  //     conditions.push(where(fields[i], '==', values[i]));
-  //   }
+    for (let i = 0; i < fields.length; i++) {
+      conditions.push(where(fields[i], '==', values[i]));
+    }
   
-  //   const filteredQuery = query(collection(this.firestore, 'turnos'), ...conditions);
-  //   const observable = collectionData(filteredQuery, { idField: 'id' });
-  
-  //   this.sub = observable.subscribe((respuesta) => {
-  //     this.coleccionTurnos = respuesta;
-  //     this.obtenerTurnosSubject.next(true);
-  //   });
-  // }
+    const filteredQuery = query(collection(this.firestore, 'turnos'), ...conditions);
+    return collectionData(filteredQuery, { idField: 'id' });
+  }
+
 
   obtenerTurnoPorIdEspecialistaFechaYHora(idEspecialista: string, fecha: string, hora: number)
   {
@@ -183,5 +184,17 @@ export class TurnosService {
   {
     const turnoDocRef = doc(this.firestore, `turnos/${id}`);
     return updateDoc(turnoDocRef, { estado: 'cancelado', motivosCancelacion: motivos })
+  }
+
+  rechazarTurno(id: string, motivos: string)
+  {
+    const turnoDocRef = doc(this.firestore, `turnos/${id}`);
+    return updateDoc(turnoDocRef, { estado: 'rechazado', motivosRechazo: motivos })
+  }
+
+  calificarTurno(id: string, comentario: string, estrellas: number)
+  {
+    const turnoDocRef = doc(this.firestore, `turnos/${id}`);
+    return updateDoc(turnoDocRef, {calificacion: {estrellas: estrellas, comentario: comentario}})
   }
 }

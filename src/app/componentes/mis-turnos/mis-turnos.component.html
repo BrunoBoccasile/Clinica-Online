@@ -4,46 +4,124 @@
 
 
 <div class="container d-flex align-items-center justify-content-center h-100">
-    
+
     <div class="card-mis-turnos card p-4 col-md-10">
-        @if (autenticacionLista) 
+        @if (autenticacionLista)
         {
-        <h1 class="display-3 text-center">Mis turnos</h1>
+        <h1 class="display-3 text-center" *ngIf="authService.tipoUsuario != 'administrador'">Mis turnos</h1>
+        <h1 class="display-3 text-center" *ngIf="authService.tipoUsuario == 'administrador'">Turnos</h1>
         <h2 class="mb-0 text-center">Filtros:</h2>
-        <div class="d-flex align-items-center col-12">
+        <div class="d-flex align-items-center col-12 my-1">
             <div class="mx-2">
                 <button [disabled]="!turnosListos" (click)="limpiarFiltros()" class="btn">
-                    <svg  xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-trash3" viewBox="0 0 16 16">
-                        <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47M8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5"/>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor"
+                        class="bi bi-trash3" viewBox="0 0 16 16">
+                        <path
+                            d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47M8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5" />
                     </svg>
                 </button>
             </div>
             <div class="input-group mx-1">
-                <button class="btn btn-outline-secondary" type="button" (click)="mostrarModalFiltroEspecialidades()" [disabled]="!turnosListos">Especialidad</button>
+                <button class="btn btn-outline-secondary" type="button" (click)="mostrarModalFiltroEspecialidades()"
+                    [disabled]="!turnosListos">Especialidad</button>
                 <input type="text" class="form-control" value={{especialidadSeleccionada}} readonly>
             </div>
             <div class="input-group mx-1">
-                @if (authService.tipoUsuario == "paciente") 
+                @if (authService.tipoUsuario == "paciente" || authService.tipoUsuario == "administrador")
                 {
-                    <button class="btn btn-outline-secondary" type="button" (click)="mostrarModalFiltroEspecialistas()" [disabled]="!turnosListos">Especialista</button>
-                    <input type="text" class="form-control" readonly value={{especialistaSeleccionado}}>
+                <button class="btn btn-outline-secondary" type="button" (click)="mostrarModalFiltroEspecialistas()"
+                    [disabled]="!turnosListos">Especialista</button>
+                <input type="text" class="form-control" readonly value={{especialistaSeleccionado}}>
                 }
                 @if (authService.tipoUsuario == "especialista")
                 {
-                    <button class="btn btn-outline-secondary" type="button" (click)="mostrarModalFiltroPacientes()" [disabled]="!turnosListos">Paciente</button>
-                    <input type="text" class="form-control" readonly value={{pacienteSeleccionado}}> 
+                <button class="btn btn-outline-secondary" type="button" (click)="mostrarModalFiltroPacientes()"
+                    [disabled]="!turnosListos">Paciente</button>
+                <input type="text" class="form-control" readonly value={{pacienteSeleccionado}}>
                 }
             </div>
         </div>
-
-        <div class="card p-1 my-4" style="overflow-y: auto; max-height: 500px;">
+        <div class="d-flex align-items-center col-12 my-1">
+            <div class="input-group mx-1">
+                <button class="btn btn-outline-secondary" (click)="establecerFiltro('fecha', fechaSeleccionada)"
+                    [disabled]="!turnosListos || !fechaSeleccionada">Fecha</button>
+                <input type="text" class="form-control" placeholder="dd/mm" [(ngModel)]="fechaSeleccionada">
+            </div>
+            <div class="input-group mx-1">
+                <button class="btn btn-outline-secondary" (click)="establecerFiltro('hora', horaSeleccionada)"
+                    [disabled]="!turnosListos || !horaSeleccionada">Hora</button>
+                <input type="text" class="form-control" placeholder="hh:mm am/pm" [(ngModel)]="horaSeleccionada">
+            </div>
+            <div class="input-group mx-1">
+                <button class="btn btn-outline-secondary" (click)="establecerFiltro('estado', estadoSeleccionado)"
+                    [disabled]="!turnosListos || !estadoSeleccionado">Estado</button>
+                <input type="text" class="form-control" [(ngModel)]="estadoSeleccionado">
+            </div>
+        </div>
+        <div class="d-flex align-items-center col-12 my-1">
+            <div class="input-group mx-1">
+                <button class="btn btn-outline-secondary"
+                    (click)="establecerFiltro('historiaClinica.peso', pesoSeleccionado)"
+                    [disabled]="!turnosListos || !pesoSeleccionado">Peso</button>
+                <input type="number" class="form-control" placeholder="kg" [(ngModel)]="pesoSeleccionado">
+            </div>
+            <div class="input-group mx-1">
+                <button class="btn btn-outline-secondary"
+                    (click)="establecerFiltro('historiaClinica.altura', alturaSeleccionada)"
+                    [disabled]="!turnosListos || !alturaSeleccionada">Altura</button>
+                <input type="number" class="form-control" placeholder="cm" [(ngModel)]="alturaSeleccionada">
+            </div>
+            <div class="input-group mx-1">
+                <button class="btn btn-outline-secondary"
+                    (click)="establecerFiltro('historiaClinica.temperatura', temperaturaSeleccionada)"
+                    [disabled]="!turnosListos || !temperaturaSeleccionada">Temperatura</button>
+                <input type="number" class="form-control" placeholder="C°" [(ngModel)]="temperaturaSeleccionada">
+            </div>
+            <div class="input-group mx-1">
+                <button class="btn btn-outline-secondary"
+                    (click)="establecerFiltro('historiaClinica.presion', presionSeleccionada)"
+                    [disabled]="!turnosListos || !presionSeleccionada">Presion</button>
+                <input type="number" class="form-control" placeholder="mmHg/80" [(ngModel)]="presionSeleccionada">
+            </div>
+        </div>
+        <div class="d-flex align-items-center col-12 my-1">
+            <button class="btn btn-sumar-datos rounded-circle" (click)="agregarDatoDinamicoFiltro()"
+                [disabled]="!datosDinamicosFiltros.includes(false)">
+                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-plus"
+                    viewBox="0 0 16 16">
+                    <path
+                        d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4" />
+                </svg>
+            </button>
+            @for (datoDinamico of datosDinamicosFiltros; track datoDinamico; let i = $index)
+            {
+            @if (datoDinamico)
+            {
+            <div class="input-group mx-1">
+                <button class="btn btn-outline-secondary"
+                    (click)="establecerFiltro('historiaClinica.'+datosDinamicoSeleccionados[i].clave, datosDinamicoSeleccionados[i].valor)"
+                    (click)="setearClaveDinamica(i)"
+                    [disabled]="!turnosListos || !datosDinamicoSeleccionados[i].clave || !datosDinamicoSeleccionados[i].valor">Ok</button>
+                <input type="text" class="form-control" placeholder="Ej.: caries"
+                    [(ngModel)]="datosDinamicoSeleccionados[i].clave" [readOnly]="datosDinamicoSeleccionados[i].setted">
+                <input type="text" class="form-control" placeholder="Ej.: 4"
+                    [(ngModel)]="datosDinamicoSeleccionados[i].valor">
+            </div>
+            }
+            }
+        </div>
+        <div class="card p-1 my-4" style="overflow-y: auto; max-height: 400px;">
 
             <table class="table table-striped ">
                 <thead>
                     <tr>
                         <th scope="col">Especialidad</th>
-                        <th scope="col" *ngIf="authService.tipoUsuario == 'paciente'">Especialista</th>
-                        <th scope="col" *ngIf="authService.tipoUsuario == 'especialista'">Paciente</th>
+                        <th scope="col"
+                            *ngIf="authService.tipoUsuario == 'paciente' || authService.tipoUsuario =='administrador'">
+                            Especialista</th>
+                        <th scope="col"
+                            *ngIf="authService.tipoUsuario == 'especialista' || authService.tipoUsuario =='administrador'">
+                            Paciente</th>
 
                         <th scope="col">Fecha</th>
                         <th scope="col">Hora</th>
@@ -53,37 +131,56 @@
                 <tbody class="table-group-divider">
                     @if (turnosListos)
                     {
-                        @if(hayTurnos)
-                        {             
-                            @for (turno of turnos; track $index)
-                            { 
-                                <tr (click)="mostrarModalAccionesTurno(turno)" role="button">
-                                    <td>{{turno.especialidad}}</td>
-                                    <td *ngIf="authService.tipoUsuario == 'paciente'">{{turno.nombreEspecialista + " " + turno.apellidoEspecialista}}</td>
-                                    <td *ngIf="authService.tipoUsuario == 'especialista'">{{turno.nombrePaciente + " " + turno.apellidoPaciente}}</td>
-                                    <td>{{turno.fecha}}</td>
-                                    <td>{{turno.hora | minutosAHoraPipe}}</td>
-                                    <td>{{turno.estado}}</td>
-                                </tr>
-                            }
-                        }
-                        @else 
-                        {
-                            <td colspan="5" class="text-center">
-                                <div class="d-flex justify-content-center align-items-center w-100 h-100">
-                                    <div class="card bg-danger p-3">
-                                        @if (filtrosActivos) 
-                                        {
-                                            <h3 class="text-white">No hay turnos para mostrar</h3>
-                                        }
-                                    </div>
-                                </div>                        
-                            </td>
-                        }
+                    @if(hayTurnos)
+                    {
+                    @for (turno of turnos; track $index)
+                    {
+                    <tr (click)="mostrarModalAccionesTurno(turno)" role="button">
+                        <td>{{turno.especialidad}}</td>
+                        <td *ngIf="authService.tipoUsuario == 'paciente' || authService.tipoUsuario =='administrador'">
+                            {{turno.nombreEspecialista + " " + turno.apellidoEspecialista}}</td>
+                        <td
+                            *ngIf="authService.tipoUsuario == 'especialista' ||authService.tipoUsuario =='administrador'">
+                            {{turno.nombrePaciente + " " + turno.apellidoPaciente}}</td>
+                        <td>{{turno.fecha}}</td>
+                        <td>{{turno.hora | minutosAHoraPipe}}</td>
+                        <td>{{turno.estado}}</td>
+                    </tr>
+                    }
                     }
                     @else
                     {
-                        <!-- <tr>
+                    @if (authService.tipoUsuario == "administrador")
+                    {
+                    <td colspan="6" class="text-center">
+                        <div class="d-flex justify-content-center align-items-center w-100 h-100">
+                            <div class="card bg-danger p-3">
+                                @if (filtrosActivos)
+                                {
+                                <h3 class="text-white">No hay turnos para mostrar</h3>
+                                }
+                            </div>
+                        </div>
+                    </td>
+                    }
+                    @else
+                    {
+                    <td colspan="5" class="text-center">
+                        <div class="d-flex justify-content-center align-items-center w-100 h-100">
+                            <div class="card bg-danger p-3">
+                                @if (filtrosActivos)
+                                {
+                                <h3 class="text-white">No hay turnos para mostrar</h3>
+                                }
+                            </div>
+                        </div>
+                    </td>
+                    }
+                    }
+                    }
+                    @else
+                    {
+                    <!-- <tr>
                             <td colspan="5" class="text-center">
                                 <div class="d-flex justify-content-center align-items-center w-100 h-100">
                                     <app-spinner></app-spinner>
@@ -94,23 +191,23 @@
                 </tbody>
             </table>
         </div>
-    }
-    @else 
-    {
+        }
+        @else
+        {
         <div class="my-auto mx-auto text-center">
             <h1>Cargando...</h1>
         </div>
-    }
-        </div>
+        }
     </div>
+</div>
 
 <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-aria-labelledby="staticBackdropLabel" aria-hidden="true" #modalFiltroEspecialidades>
-<div class="modal-dialog">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h1 class="modal-title fs-5" id="staticBackdropLabel">
-                Seleccione una especialidad</h1>
+    aria-labelledby="staticBackdropLabel" aria-hidden="true" #modalFiltroEspecialidades>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="staticBackdropLabel">
+                    Seleccione una especialidad</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body mx-auto">
@@ -118,14 +215,16 @@ aria-labelledby="staticBackdropLabel" aria-hidden="true" #modalFiltroEspecialida
                     <li class="list-group-item active text-center" aria-current="true">Especialidades</li>
                     @if (especialidades)
                     {
-                        @for (especialidad of especialidades; track $index)
-                        {
-                            <li  class="list-group-item">
-                                <button [disabled]="!turnosListos" (click)="establecerFiltro('especialidad', especialidad.nombre)" class="btn w-100" data-bs-dismiss="modal">
-                                    {{especialidad.nombre}}
-                                </button>
-                            </li>
-                        }
+                    @for (especialidad of especialidades; track $index)
+                    {
+                    <li class="list-group-item">
+                        <button [disabled]="!turnosListos"
+                            (click)="establecerFiltro('especialidad', especialidad.nombre)" class="btn w-100"
+                            data-bs-dismiss="modal">
+                            {{especialidad.nombre}}
+                        </button>
+                    </li>
+                    }
                     }
                     @else {
                     <app-spinner></app-spinner>
@@ -148,7 +247,9 @@ aria-labelledby="staticBackdropLabel" aria-hidden="true" #modalFiltroEspecialida
             <div class="modal-body mx-auto">
                 <ul class="list-group m-4">
                     <li class="list-group-item active text-center" aria-current="true">Especialistas</li>
-                        <app-tabla-especialistas *ngIf="turnosListos" [estado]="'aprobado'" (onEnviarId)="establecerFiltro('idEspecialista', $event)" data-bs-dismiss="modal" role="button"></app-tabla-especialistas>
+                    <app-tabla-especialistas *ngIf="turnosListos" [estado]="'aprobado'"
+                        (onEnviarId)="establecerFiltro('idEspecialista', $event)" data-bs-dismiss="modal"
+                        role="button"></app-tabla-especialistas>
                 </ul>
             </div>
         </div>
@@ -161,87 +262,248 @@ aria-labelledby="staticBackdropLabel" aria-hidden="true" #modalFiltroEspecialida
         <div class="modal-content">
             <div class="modal-header">
                 <h1 class="modal-title fs-5" id="staticBackdropLabel">
-                    Completar acciones</h1>
+                    Acciones</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body mx-auto d-flex flex-column p-2">
-                
-                @if ( 
-                    (authService.tipoUsuario == "paciente" && !mostrarBotonesAcciones.cancelar && !mostrarBotonesAcciones.verResena && !mostrarBotonesAcciones.completarEncuesta && !mostrarBotonesAcciones.calificarAtencion )
-                    ||
-                    (authService.tipoUsuario == "especialista" && !mostrarBotonesAcciones.cancelar && !mostrarBotonesAcciones.aceptarTurno && !mostrarBotonesAcciones.rechazarTurno && !mostrarBotonesAcciones.finalizarTurno)
-                    )
+
+                @if (
+                (authService.tipoUsuario == "paciente" && !mostrarBotonesAcciones.verHistoriaClinica &&
+                !mostrarBotonesAcciones.cancelar && !mostrarBotonesAcciones.verCalificacion &&
+                !mostrarBotonesAcciones.completarEncuesta && !mostrarBotonesAcciones.calificarAtencion)
+                ||
+                (authService.tipoUsuario == "especialista" && !mostrarBotonesAcciones.verHistoriaClinica &&
+                !mostrarBotonesAcciones.cancelar && !mostrarBotonesAcciones.verCalificacion &&
+                !mostrarBotonesAcciones.aceptarTurno && !mostrarBotonesAcciones.rechazarTurno &&
+                !mostrarBotonesAcciones.finalizarTurno)
+                ||
+                (authService.tipoUsuario == "administrador" && !mostrarBotonesAcciones.verHistoriaClinica &&
+                !mostrarBotonesAcciones.cancelar)
+                )
                 {
-                    <h5 class="mx-4 p-4">No hay acciones para realizar</h5>
+                <h5 class="mx-4 p-4">No hay acciones para realizar</h5>
                 }
 
                 @if(mostrarBotonesAcciones.aceptarTurno && mostrarBotonesAcciones.rechazarTurno)
                 {
                 <div class="card p-2 my-4">
-                    <button class="btn btn-success text-white my-2" data-bs-dismiss="modal" (click)="cambiarEstadoTurno('aceptado')">Aceptar turno</button>
-                        <button class="btn btn-dark text-white my-2" data-bs-dismiss="modal" (click)="cambiarEstadoTurno('rechazado')">Rechazar turno</button>
-                </div> 
-            }
-
-                @if (mostrarBotonesAcciones.finalizarTurno) 
-                {
-                    <button class="btn btn-primary text-white my-2" data-bs-dismiss="modal" (click)="cambiarEstadoTurno('realizado')">Finalizar turno</button>
-
+                    <button class="btn btn-success text-white my-2" data-bs-dismiss="modal"
+                        (click)="cambiarEstadoTurno('aceptado')">Aceptar turno</button>
+                </div>
+                <div class="card p-2 my-4">
+                    <textarea class="form-control" rows="3" placeholder="Motivos*"
+                    [(ngModel)]="motivosRechazo"></textarea>
+                    <button class="btn btn-dark text-white my-2" data-bs-dismiss="modal"
+                    (click)="rechazarTurno()">Rechazar turno</button>
+                </div>
                 }
 
-                @if (mostrarBotonesAcciones.cancelar) 
+                @if (mostrarBotonesAcciones.finalizarTurno)
                 {
-                    <div class="card p-2 my-4">
-                        <textarea class="form-control" id="exampleFormControlTextarea1" rows="3" placeholder="Motivos*" [(ngModel)]="motivosCancelacion"></textarea>
-                        <button class="btn btn-danger text-white my-2" data-bs-dismiss="modal" (click)="cancelarTurno()" [disabled]="!motivosCancelacion">Cancelar turno</button>
-                    </div>
+                <div class="card p-2">
+                    <form [formGroup]="formHistoriaClinica">
+
+                        <div class="input-group my-2">
+                            <span class="input-group-text">Altura (cm)</span>
+                            <input type="number" class="form-control" formControlName="altura">
+                        </div>
+                        @if (altura?.hasError('min'))
+                        {
+                        <ng-container>
+                            <small class="text-danger">Debe ser mayor que 1</small>
+                        </ng-container>
+                        }
+                        <div class="input-group my-2">
+                            <span class="input-group-text">Peso (kg)</span>
+                            <input type="number" class="form-control" formControlName="peso">
+                        </div>
+                        @if (peso?.hasError('min'))
+                        {
+                        <ng-container>
+                            <small class="text-danger">Debe ser mayor que 1</small>
+                        </ng-container>
+                        }
+                        <div class="input-group my-2">
+                            <span class="input-group-text">Temperatura (C°)</span>
+                            <input type="number" class="form-control" formControlName="temperatura">
+                        </div>
+                        @if (temperatura?.hasError('min'))
+                        {
+                        <ng-container>
+                            <small class="text-danger">Debe ser mayor que 1</small>
+                        </ng-container>
+                        }
+                        <div class="input-group my-2">
+                            <span class="input-group-text">Presión (mmHg/80)</span>
+                            <input type="number" class="form-control" formControlName="presion">
+                        </div>
+                        @if (presion?.hasError('min'))
+                        {
+                        <ng-container>
+                            <small class="text-danger">Debe ser mayor que 1</small>
+                        </ng-container>
+                        }
+                        @for (datoDinamico of datosDinamicos; track datoDinamico; let i=$index)
+                        {
+                        @if (datoDinamico)
+                        {
+                        <div class="input-group my-2">
+                            <input type="text" class="form-control w-25" [formControlName]="'claveDinamica'+(i+1)">
+                            <input type="text" class="form-control w-75" [formControlName]="'valorDinamico'+(i+1)">
+                        </div>
+                        }
+                        }
+                        <button class="btn btn-sumar-datos rounded-circle" (click)="agregarDatoDinamico()"
+                            [disabled]="!datosDinamicos.includes(false)">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor"
+                                class="bi bi-plus" viewBox="0 0 16 16">
+                                <path
+                                    d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4" />
+                            </svg>
+                        </button>
+                        <button class="btn btn-primary text-white my-2" data-bs-dismiss="modal"
+                            (click)="finalizarTurno()" [disabled]="!formHistoriaClinica.valid" type="submit">Finalizar
+                            turno</button>
+                    </form>
+                </div>
                 }
-                <button class="btn btn-success my-2" *ngIf="mostrarBotonesAcciones.verResena" data-bs-dismiss="modal">Ver reseña</button>
-                
-                @if(mostrarBotonesAcciones.calificarAtencion)
+
+                @if (mostrarBotonesAcciones.cancelar)
+                {
+                <div class="card p-2 my-4">
+                    <textarea class="form-control" id="exampleFormControlTextarea1" rows="3" placeholder="Motivos*"
+                        [(ngModel)]="motivosCancelacion"></textarea>
+                    <button class="btn btn-danger text-white my-2" data-bs-dismiss="modal" (click)="cancelarTurno()"
+                        [disabled]="!motivosCancelacion">Cancelar turno</button>
+                </div>
+                }
+
+                @if(mostrarBotonesAcciones.completarEncuesta)
                 {
 
-                    <div class="card p-2">
-                        <form [formGroup]="formEncuesta" (ngSubmit)="enviarEncuesta()" class="m-3">
-                            <div style="max-height: 300px; overflow-y: auto;">
-                                
-                                <div *ngFor="let pregunta of preguntasEncuesta">
-                                    <div class="mb-3">
-                                        <label>{{ pregunta.number + ") " + pregunta.question }}</label>
-                                        <div class="form-check">
-                                            <input 
-                                            class="form-check-input" 
-                                            type="radio" 
-                                            [formControlName]="'question' + pregunta.number" 
-                                            [value]="'Sí'"
+                <div class="card p-2 my-4">
+                    <form [formGroup]="formEncuesta" (ngSubmit)="enviarEncuesta()" class="m-3">
+                        <div style="max-height: 300px; overflow-y: auto;">
+
+                            <div *ngFor="let pregunta of preguntasEncuesta">
+                                <div class="mb-3">
+                                    <label>{{ pregunta.number + ") " + pregunta.question }}</label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio"
+                                            [formControlName]="'question' + pregunta.number" [value]="'Sí'"
                                             id="pregunta{{pregunta.number}}Si">
-                                            <label class="form-check-label" for="pregunta{{pregunta.number}}Si">Sí</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input 
-                                            class="form-check-input" 
-                                            type="radio" 
-                                            [formControlName]="'question' + pregunta.number" 
-                                            [value]="'No'"
+                                        <label class="form-check-label" for="pregunta{{pregunta.number}}Si">Sí</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio"
+                                            [formControlName]="'question' + pregunta.number" [value]="'No'"
                                             id="pregunta{{pregunta.number}}No">
-                                            <label class="form-check-label" for="pregunta{{pregunta.number}}No">No</label>
-                                        </div>
+                                        <label class="form-check-label" for="pregunta{{pregunta.number}}No">No</label>
                                     </div>
                                 </div>
                             </div>
-                            <button type="submit" class="btn btn-warning my-2 w-100" data-bs-dismiss="modal" [disabled]="!formEncuesta.valid">Enviar encuesta</button>
-                        </form>
-                    </div>
-                    <button class="btn btn-primary my-2" *ngIf="mostrarBotonesAcciones.calificarAtencion" data-bs-dismiss="modal">Calificar atención</button>
-                }
+                        </div>
+                        <button type="submit" class="btn btn-warning my-2 w-100" data-bs-dismiss="modal"
+                            [disabled]="!formEncuesta.valid">Enviar encuesta</button>
+                    </form>
                 </div>
+                }
+
+                @if (mostrarBotonesAcciones.calificarAtencion)
+                {
+                <div class="card p-2 my-4">
+                    <form [formGroup]="formCalificacion" (ngSubmit)="enviarCalificacion()" class="m-3">
+                        <div class="d-flex flex-row align-items-center justify-content-center my-2">
+                            @for (estrella of estrellas; track estrella; let i = $index)
+                            {
+                            <div class="m-1">
+
+                                @if (estrella == true)
+                                {
+                                <svg (click)="establecerEstrellas(i)" xmlns="http://www.w3.org/2000/svg" width="20"
+                                    height="20" fill="currentColor" class="bi bi-star-fill" viewBox="0 0 16 16">
+                                    <path
+                                        d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z" />
+                                </svg>
+                                }
+                                @else {
+                                <svg (click)="establecerEstrellas(i)" xmlns="http://www.w3.org/2000/svg" width="20"
+                                    height="20" fill="currentColor" class="bi bi-star" viewBox="0 0 16 16">
+                                    <path
+                                        d="M2.866 14.85c-.078.444.36.791.746.593l4.39-2.256 4.389 2.256c.386.198.824-.149.746-.592l-.83-4.73 3.522-3.356c.33-.314.16-.888-.282-.95l-4.898-.696L8.465.792a.513.513 0 0 0-.927 0L5.354 5.12l-4.898.696c-.441.062-.612.636-.283.95l3.523 3.356-.83 4.73zm4.905-2.767-3.686 1.894.694-3.957a.56.56 0 0 0-.163-.505L1.71 6.745l4.052-.576a.53.53 0 0 0 .393-.288L8 2.223l1.847 3.658a.53.53 0 0 0 .393.288l4.052.575-2.906 2.77a.56.56 0 0 0-.163.506l.694 3.957-3.686-1.894a.5.5 0 0 0-.461 0z" />
+                                </svg>
+                                }
+                            </div>
+                            }
+
+                        </div>
+                        <textarea class="form-control my-2" rows="3" placeholder="Comentario*"
+                            formControlName="comentario"></textarea>
+
+
+                        <button class="btn btn-primary my-2 w-100" data-bs-dismiss="modal"
+                            [disabled]="!formCalificacion.valid">Calificar atención</button>
+                    </form>
+                </div>
+                }
+
+                @if(mostrarBotonesAcciones.verCalificacion)
+                {
+                <div class="card p-2 my-4">
+
+                    <h5 class="text-center">Calificación</h5>
+                    <div class="d-flex flex-row align-items-center justify-content-center my-2">
+
+                        @for (estrella of this.estrellas; track estrella; let i = $index)
+                        {
+                        <div class="mx-1">
+
+                            @if (i <= turnoSeleccionado.calificacion.estrellas-1) { <svg
+                                xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
+                                class="bi bi-star-fill" viewBox="0 0 16 16">
+                                <path
+                                    d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z" />
+                                </svg>
+                                }
+                                @else {
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
+                                    class="bi bi-star" viewBox="0 0 16 16">
+                                    <path
+                                        d="M2.866 14.85c-.078.444.36.791.746.593l4.39-2.256 4.389 2.256c.386.198.824-.149.746-.592l-.83-4.73 3.522-3.356c.33-.314.16-.888-.282-.95l-4.898-.696L8.465.792a.513.513 0 0 0-.927 0L5.354 5.12l-4.898.696c-.441.062-.612.636-.283.95l3.523 3.356-.83 4.73zm4.905-2.767-3.686 1.894.694-3.957a.56.56 0 0 0-.163-.505L1.71 6.745l4.052-.576a.53.53 0 0 0 .393-.288L8 2.223l1.847 3.658a.53.53 0 0 0 .393.288l4.052.575-2.906 2.77a.56.56 0 0 0-.163.506l.694 3.957-3.686-1.894a.5.5 0 0 0-.461 0z" />
+                                </svg>
+                                }
+                        </div>
+                        }
+                    </div>
+                    <div class="card p-2">
+                        <label><i>{{turnoSeleccionado.calificacion.comentario}}</i></label>
+                    </div>
+                </div>
+                }
+
+                @if (mostrarBotonesAcciones.verHistoriaClinica)
+                {
+                    <div class="card px-4 my-4">
+                        <h1 class="my-2">Historia clínica</h1>
+                        <ul>
+                            @for (key of objectKeys(turnoSeleccionado.historiaClinica); track $index) 
+                            {
+                                <li>
+                                    <p>{{ key | capitalizePipe}}: {{ turnoSeleccionado.historiaClinica[key] }}</p>
+                                </li>
+                                
+                            }
+                        </ul>
+                    </div>
+                }
             </div>
         </div>
-        
     </div>
 
+</div>
 
-    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+
+<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
     aria-labelledby="staticBackdropLabel" aria-hidden="true" #modalFiltroPacientes>
     <div class="modal-dialog">
         <div class="modal-content">
@@ -253,7 +515,8 @@ aria-labelledby="staticBackdropLabel" aria-hidden="true" #modalFiltroEspecialida
             <div class="modal-body mx-auto">
                 <ul class="list-group m-4">
                     <li class="list-group-item active text-center" aria-current="true">Pacientes</li>
-                        <app-tabla-pacientes *ngIf="turnosListos" (onEnviarId)="establecerFiltro('idPaciente', $event)" data-bs-dismiss="modal" role="button"></app-tabla-pacientes>
+                    <app-tabla-pacientes *ngIf="turnosListos" (onEnviarId)="establecerFiltro('idPaciente', $event)"
+                        data-bs-dismiss="modal" role="button"></app-tabla-pacientes>
                 </ul>
             </div>
         </div>

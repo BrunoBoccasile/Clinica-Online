@@ -4,6 +4,15 @@ export class Tiempo
 {
     constructor() { }
 
+    public getFechaActual()
+    {
+        const fecha = new Date();
+        const dia = String(fecha.getDate()).padStart(2, '0');
+        const mes = String(fecha.getMonth() + 1).padStart(2, '0');
+        const año = fecha.getFullYear();
+        return `${dia}/${mes}/${año}`;
+    }
+
     public getDia(fechaFormateada: string)
     {
         let [dia, mes] = fechaFormateada.split('/').map(Number);
@@ -53,6 +62,35 @@ export class Tiempo
 
         return `${horaFormateada}:${minutosFormateados} ${ampm}`;
 
+    }
+
+    public horaAMinutos(hora: string): number {
+        const regex = /^(\d{1,2}):(\d{2}) (am|pm)?$/i;
+        const match = hora.match(regex);
+    
+        if (!match) {
+            return 0;
+        }
+        let [time, ampm] = hora.split(' ');
+
+        let [hora12, minutos] = time.split(':').map(Number);
+        if([hora12, minutos])
+        {
+
+            if (ampm.toLowerCase() === 'pm' && hora12 !== 12) {
+                hora12 += 12;
+            } else if (ampm.toLowerCase() === 'am' && hora12 === 12) {
+                hora12 = 0;
+            }
+        }
+    
+        console.log((hora12 * 60) +minutos);
+        return (hora12 * 60) + minutos;
+    }
+
+    public fechaADate(fecha: string): Date {
+        const [dia, mes] = fecha.split('/').map(Number);
+        return new Date(new Date().getFullYear(), mes - 1, dia);
     }
 }
 export declare function provideTiempo(fn: (injector: Injector) => Tiempo, ...deps: any[]): EnvironmentProviders;

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Firestore, addDoc, collection, collectionData, deleteDoc, doc } from '@angular/fire/firestore';
-import { BehaviorSubject, Subscription } from 'rxjs';
+import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 import { Especialidad } from '../entidades/especialidad';
 
 @Injectable({
@@ -60,5 +60,11 @@ export class EspecialidadesService {
     }).catch(error => {
       console.error('Error al eliminar la especialidad: ', error);
     });
+  }
+
+  getEspecialidades(): Observable<Especialidad[]>
+  {
+    let col = collection(this.firestore, 'especialidades');
+    return collectionData(col, {idField: 'id'}) as Observable<Especialidad[]>;
   }
 }
