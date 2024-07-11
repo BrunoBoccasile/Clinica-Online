@@ -71,6 +71,8 @@ Además de ver la información de los usuarios, desde esta sección se puede hab
 <br>
 También se podrá generar nuevos usuarios, con el mismo requerimiento que en la sección registro. Pero desde esta sección se podrá generar un usuario Administrador.
 <br>
+Se puede descargar un Excel con los datos de los usuarios. Al seleccionar un paciente, descarga los datos de que turnos tomo y con quién
+<br> 
 ![](https://github.com/BrunoBoccasile/LaboIV-TPClinicaOnline/blob/master/src/assets/pantallas/seccion-usuarios.png)
 ![](https://github.com/BrunoBoccasile/LaboIV-TPClinicaOnline/blob/master/src/assets/pantallas/seccion-usuarios-2.png)
 
