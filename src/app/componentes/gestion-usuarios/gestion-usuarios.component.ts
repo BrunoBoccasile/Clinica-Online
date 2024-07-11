@@ -560,8 +560,7 @@ export class GestionUsuariosComponent implements OnInit, OnDestroy
   seleccionarEspecialidad(especialidad: string)
   {
     const especialidadesActuales = this.especialidadEspecialista?.value;
-
-    if (especialidadesActuales != "")
+    if (especialidadesActuales != "" && especialidadesActuales != null)
     {
       const especialidadesLista = especialidadesActuales.split(", ");
 

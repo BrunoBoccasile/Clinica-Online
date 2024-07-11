@@ -112,7 +112,7 @@ export class PdfAtencionesComponent
       doc.addImage(img, 'PNG', bufferX, bufferY, pdfWidth, pdfHeight, undefined, 'FAST');
       return doc;
     }).then((docResult) => {
-      docResult.save('historiaclinica.pdf');
+      docResult.save(`atenciones-${this.especialidadSeleccionada}.pdf`);
       this.ocultarSpinner();
     })
 

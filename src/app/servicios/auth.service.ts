@@ -50,7 +50,7 @@ export class AuthService
     //verifico el tipo de usuario
     onAuthStateChanged(this.auth, (user) =>
     {
-      if (user)
+      if (user && user.emailVerified)
       {
         if (user.email)
         {

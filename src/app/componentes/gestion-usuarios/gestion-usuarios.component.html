@@ -473,6 +473,23 @@
         </div>
       </div>
       <div style="overflow-y: auto; max-height: 450px;">
+        <ul >
+          <li>
+            <h5>
+              <strong>DNI:</strong> {{pacienteSeleccionado?.dni}}
+            </h5>
+          </li>
+          <li>
+            <h5>
+              <strong>Obra social:</strong> {{pacienteSeleccionado?.obraSocial}}
+            </h5>
+          </li>
+          <li>
+            <h5>
+              <strong>Mail:</strong> {{pacienteSeleccionado?.mail}}
+            </h5>
+          </li>
+        </ul>
         @if (turnosPaciente) 
         {
             @for (turno of turnosPaciente; track $index) 
