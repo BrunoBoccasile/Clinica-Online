@@ -143,4 +143,11 @@ export class AdministradoresService
       const q = query(collection(this.firestore, "administradores"), where("mail", "==", email));
       return getDocs(q);
   }
+
+
+  getAdministradores(): Observable<Administrador[]>
+  {
+    let col = collection(this.firestore, 'administradores');
+    return collectionData(col, {idField: 'id'}) as Observable<Administrador[]>;
+  }
 }

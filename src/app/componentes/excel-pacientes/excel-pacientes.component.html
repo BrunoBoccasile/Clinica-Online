@@ -1,0 +1,40 @@
+<app-spinner [ngClass]="claseSpinner"></app-spinner>
+
+@if (pacientes) 
+{
+    <button class="btn btn-success btn-g mx-auto m-4 w-25" (click)="descargarExcel()">Descargar Excel</button>
+    <div class="card m-4">
+
+        <div class="table-responsive">
+            
+            <table class="table table-striped" id="table-data">
+                <thead>
+                    <tr>
+                        <th scope="col">DNI</th>
+                        <th scope="col">Nombre</th>
+                        <th scope="col">Apellido</th>
+                        <th scope="col">Edad</th>
+                        <th scope="col">Obra social</th>
+                        <th scope="col">Mail</th>
+                        
+                    </tr>
+                </thead>
+                <tbody class="table-group-divider">
+                    @for (paciente of pacientes; track $index){
+                        @if(paciente.id)
+                        {
+                            <tr>
+                                <th scope="row">{{paciente.dni}}</th>
+                                <td>{{paciente.nombre}}</td>
+                                <td>{{paciente.apellido}}</td>
+                                <td>{{paciente.edad}}</td>
+                                <td>{{paciente.obraSocial}}</td>
+                                <td>{{paciente.mail}}</td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    }

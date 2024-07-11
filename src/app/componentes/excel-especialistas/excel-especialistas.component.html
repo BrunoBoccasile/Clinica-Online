@@ -1,0 +1,39 @@
+<app-spinner [ngClass]="claseSpinner"></app-spinner>
+
+@if (especialistas)
+{
+<button class="btn btn-success btn-g mx-auto m-4 w-25" (click)="descargarExcel()">Descargar Excel</button>
+<div class="card m-4">
+<div class="table-responsive">
+
+
+    <table class="table table-striped" id="table-data">
+        <thead>
+            <tr>
+                <th scope="col">DNI</th>
+                <th scope="col">Nombre</th>
+                <th scope="col">Apellido</th>
+                <th scope="col">Edad</th>
+                <th scope="col">Especialidades</th>
+                <th scope="col">Mail</th>
+                <th scope="col">Estado</th>
+            </tr>
+        </thead>
+        <tbody class="table-group-divider">
+            @for (especialista of especialistas; track $index){
+            <tr>
+                <th scope="row">{{especialista.dni}}</th>
+                <td>{{especialista.nombre}}</td>
+                <td>{{especialista.apellido}}</td>
+                <td>{{especialista.edad}}</td>
+                <td>{{especialista.especialidades | arrayToStringPipe}}</td>
+                <td>{{especialista.mail}}</td>
+                <td>{{especialista.estado}}</td>
+                <td></td>
+            </tr>
+            }
+        </tbody>
+    </table>
+</div>
+</div>
+}

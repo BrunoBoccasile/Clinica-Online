@@ -71,7 +71,8 @@ Además de ver la información de los usuarios, desde esta sección se puede hab
 <br>
 También se podrá generar nuevos usuarios, con el mismo requerimiento que en la sección registro. Pero desde esta sección se podrá generar un usuario Administrador.
 <br>
-<!-- ![]() -->
+![](https://github.com/BrunoBoccasile/LaboIV-TPClinicaOnline/blob/master/src/assets/pantallas/seccion-usuarios.png)
+![](https://github.com/BrunoBoccasile/LaboIV-TPClinicaOnline/blob/master/src/assets/pantallas/seccion-usuarios-2.png)
 
 ### Mis turnos
 Cuenta con un filtro único donde podrá filtrar por:
@@ -165,6 +166,25 @@ Cada usuario se muestra con un detalle de las últimas 3 atenciones (o menos, si
 <br>
 ![](https://github.com/BrunoBoccasile/LaboIV-TPClinicaOnline/blob/master/src/assets/pantallas/seccion-pacientes.png)
 ![](https://github.com/BrunoBoccasile/LaboIV-TPClinicaOnline/blob/master/src/assets/pantallas/seccion-pacientes-historia-clinica.png)
+
+## Estadísticas
+Como usuario Administrador, se pueden observar gráficos y estadísticas del sistema.
+<br>
+Los informes son:
+<br>
+● Log de ingresos al sistema. Indicando el usuario, día y horario que ingreso al sistema.
+<br>
+● Cantidad de turnos por especialidad.
+<br>
+● Cantidad de turnos por día.
+<br>
+● Cantidad de turnos solicitado por médico en un lapso de tiempo.
+<br>
+● Cantidad de turnos finalizados por médico en un lapso de tiempo.
+<br>
+Estos gráficos e informes se pueden descargar en un Pdf.
+![](https://github.com/BrunoBoccasile/LaboIV-TPClinicaOnline/blob/master/src/assets/pantallas/estadisticas.png)
+![](https://github.com/BrunoBoccasile/LaboIV-TPClinicaOnline/blob/master/src/assets/pantallas/estadisticas-2.png)
 
 
 ## Historias clínicas

@@ -82,3 +82,28 @@ button {
 .spinner-desactivado{
     display: none;
 }
+
+.fab-container {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    z-index: 1000;
+  }
+  
+  .fab-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 56px;
+    height: 56px;
+    background-color: #007bff;
+    color: white;
+    border-radius: 50%;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    border: none;
+    outline: none;
+  }
+  
+  .fab-button:hover {
+    background-color: #0056b3;
+  }

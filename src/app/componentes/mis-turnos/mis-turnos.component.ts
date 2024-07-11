@@ -17,11 +17,12 @@ import { TablaPacientesComponent } from '../tabla-pacientes/tabla-pacientes.comp
 import { PacientesService } from '../../servicios/pacientes.service';
 import { Tiempo } from '../../clases/tiempo';
 import { CapitalizePipePipe } from '../../pipes/capitalize-pipe.pipe';
+import { EstadoTurnoDirective } from '../../directives/estado-turno.directive';
 
 @Component({
   selector: 'app-mis-turnos',
   standalone: true,
-  imports: [CapitalizePipePipe, SpinnerComponent, MinutosAHoraPipePipe, FormsModule, TablaEspecialistasComponent, NgIf, NgClass, ReactiveFormsModule, NgFor, TablaPacientesComponent],
+  imports: [EstadoTurnoDirective ,CapitalizePipePipe, SpinnerComponent, MinutosAHoraPipePipe, FormsModule, TablaEspecialistasComponent, NgIf, NgClass, ReactiveFormsModule, NgFor, TablaPacientesComponent],
   templateUrl: './mis-turnos.component.html',
   styleUrl: './mis-turnos.component.css'
 })

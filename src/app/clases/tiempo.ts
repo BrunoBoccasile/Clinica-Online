@@ -64,31 +64,51 @@ export class Tiempo
 
     }
 
-    public horaAMinutos(hora: string): number {
+    public getHoraActual()
+    {
+        const ahora = new Date();
+        let horas = ahora.getHours();
+        const minutos = ahora.getMinutes();
+        const ampm = horas >= 12 ? 'pm' : 'am';
+
+        horas = horas % 12;
+        horas = horas ? horas : 12;
+        const minutosStr = minutos < 10 ? '0' + minutos : minutos;
+
+        const horaActual = horas + ':' + minutosStr + ' ' + ampm;
+        return horaActual;
+    }
+
+    public horaAMinutos(hora: string): number
+    {
         const regex = /^(\d{1,2}):(\d{2}) (am|pm)?$/i;
         const match = hora.match(regex);
-    
-        if (!match) {
+
+        if (!match)
+        {
             return 0;
         }
         let [time, ampm] = hora.split(' ');
 
         let [hora12, minutos] = time.split(':').map(Number);
-        if([hora12, minutos])
+        if ([hora12, minutos])
         {
 
-            if (ampm.toLowerCase() === 'pm' && hora12 !== 12) {
+            if (ampm.toLowerCase() === 'pm' && hora12 !== 12)
+            {
                 hora12 += 12;
-            } else if (ampm.toLowerCase() === 'am' && hora12 === 12) {
+            } else if (ampm.toLowerCase() === 'am' && hora12 === 12)
+            {
                 hora12 = 0;
             }
         }
-    
-        console.log((hora12 * 60) +minutos);
+
+        console.log((hora12 * 60) + minutos);
         return (hora12 * 60) + minutos;
     }
 
-    public fechaADate(fecha: string): Date {
+    public fechaADate(fecha: string): Date
+    {
         const [dia, mes] = fecha.split('/').map(Number);
         return new Date(new Date().getFullYear(), mes - 1, dia);
     }

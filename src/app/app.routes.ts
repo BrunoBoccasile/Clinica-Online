@@ -49,5 +49,21 @@ export const routes: Routes = [
     {
         path: 'pdf-atenciones',
         loadComponent: () => import('./componentes/pdf-atenciones/pdf-atenciones.component').then(m => m.PdfAtencionesComponent)
-    }
+    },
+    {
+        path: 'estadisticas',
+        loadComponent: () => import('./componentes/estadisticas/estadisticas.component').then(m => m.EstadisticasComponent),
+        canActivate: [adminGuardGuard]
+    },
+    {
+        path: 'excel-pacientes',
+        loadComponent: () => import('./componentes/excel-pacientes/excel-pacientes.component').then(m => m.ExcelPacientesComponent)
+    },
+    {
+        path: 'excel-especialistas',
+        loadComponent: () => import('./componentes/excel-especialistas/excel-especialistas.component').then(m => m.ExcelEspecialistasComponent)
+    },
+    {
+        path: 'excel-administradores',
+        loadComponent: () => import('./componentes/excel-administradores/excel-administradores.component').then(m => m.ExcelAdministradoresComponent)    },
 ];

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Firestore, addDoc, collection, collectionData, deleteDoc, doc, getDoc, getDocs, query, updateDoc, where } from '@angular/fire/firestore';
-import { BehaviorSubject, Subscription } from 'rxjs';
+import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 import { Especialista } from '../entidades/especialista';
 import { Disponibilidad } from '../entidades/disponibilidad';
 
@@ -271,5 +271,11 @@ export class EspecialistasService
   {
       const q = query(collection(this.firestore, "especialistas"), where("mail", "==", email));
       return getDocs(q);
+  }
+
+  getEspecialistas(): Observable<Especialista[]>
+  {
+    let col = collection(this.firestore, 'especialistas');
+    return collectionData(col, {idField: 'id'}) as Observable<Especialista[]>;
   }
 }

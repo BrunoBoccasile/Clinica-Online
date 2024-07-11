@@ -1,0 +1,249 @@
+<app-spinner [ngClass]="claseSpinner"></app-spinner>
+
+<div class="container d-flex align-items-center justify-content-center h-100">
+
+    <div class="card-estadisticas card p-4 col-md-10 m-4">
+        <h1 class="display-3 text-center">Estadísticas</h1>
+        <div class="col-6 mx-auto mt-4 mb-2">
+            <div class="input-group">            
+                <span class="input-group-text">Ver</span>
+                <select class="form-select" [(ngModel)]="opcionSeleccionada" (change)="verEstadistica()">
+                    @for (tipoDeEstadistica of tiposDeEstadistica; track $index) 
+                    {
+                        <option [value]='tipoDeEstadistica.id'>{{tipoDeEstadistica.nombre}}</option>
+                    }
+                </select>
+                <button class="btn-danger btn text-white" (click)="downloadPDF()" [disabled]="!opcionSeleccionada">Descargar PDF</button>
+            </div>
+        </div>
+        <div class="card p-1 my-4"   id="cardGrafico"> 
+            @if (opcionSeleccionada) 
+            {
+                <!-- Log de ingresos -->
+                @if (opcionSeleccionada == '1') 
+                {   
+                    <div class="chart-wrapper mx-auto">
+                        <div class="chart-container">
+                            <ngx-charts-tree-map
+                            [view]="[800,500]"
+                            [scheme]="colorScheme"
+                            [results]="data1"
+                            [animations]="true"
+                            (select)="onSelect($event)">
+                            </ngx-charts-tree-map>
+                        </div>
+                    </div>
+                    <div class="card m-2">
+                        <table class="table">
+                            <thead>
+                              <tr>
+                                <th scope="col">Usuario</th>
+                                <th scope="col">Fecha y hora</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                                @for (log of logs; track $index) 
+                                {
+                                    <tr>
+                                        <td>{{log.email}}</td>
+                                        <td>{{log.date | dateFormatPipe}}</td>
+                                    </tr>
+                                }
+                                </tbody>
+                          </table>
+                    </div>
+                }
+                <!-- Cantidad de turnos por especialidad -->
+                @if (opcionSeleccionada == '2') 
+                {
+                    @if (!graficoParaPDF) 
+                    {
+
+                        <div class="chart-wrapper mx-auto">
+                            <div class="chart-container">
+                                <ngx-charts-pie-chart
+                                [scheme]="colorScheme"
+                                [results]="data2"
+                                [legendPosition]="legendPosition"
+                                [labels]="showLabels"
+                                [doughnut]="isDoughnut"
+                                (select)="onSelect($event)"
+                                (activate)="onActivate($event)"
+                                (deactivate)="onDeactivate($event)">
+                            </ngx-charts-pie-chart>
+                        </div>
+                    </div>
+                    }
+                    @else {
+                        <div class="chart-wrapper mx-auto">
+                            <div class="chart-container">
+                                <ngx-charts-tree-map
+                                [view]="[800,500]"
+                                [scheme]="colorScheme"
+                                [results]="data2"
+                                [animations]="true"
+                                (select)="onSelect($event)">
+                                </ngx-charts-tree-map>
+                            </div>
+                        </div>
+                    }
+                }
+                <!-- Cantidad de turnos por día -->
+                @if (opcionSeleccionada == '3') 
+                {
+                    @if (!graficoParaPDF) 
+                    {
+
+                        <div class="chart-wrapper">
+                            <div class="chart-container">
+                                <ngx-charts-bar-vertical
+                                [scheme]="colorScheme"
+                                [results]="data3"
+                                [xAxis]="true"
+                                [yAxis]="true"
+                                [legend]="true"
+                                [showXAxisLabel]="true"
+                                [showYAxisLabel]="true"
+                                [xAxisLabel]="'Fechas'"
+                                [yAxisLabel]="'Cantidad'"
+                                [legendTitle]="'Fechas'"
+                                (select)="onSelect($event)">
+                            </ngx-charts-bar-vertical>
+                        </div>
+                    </div>
+                }
+                @else {
+                    <div class="chart-wrapper mx-auto">
+                        <div class="chart-container">
+                            <ngx-charts-tree-map
+                            [view]="[800,500]"
+                            [scheme]="colorScheme"
+                            [results]="data3"
+                            [animations]="true"
+                            (select)="onSelect($event)">
+                            </ngx-charts-tree-map>
+                        </div>
+                    </div>
+                }
+                }
+                <!-- Cantidad de turnos solicitados -->
+                @if (opcionSeleccionada == '4') 
+                {
+                    @if (secuencia4[0])
+                    {
+                        <h1 class="text-center m-2">Seleccione un lapso de tiempo</h1>
+                        <div class="card m-4 d-flex flex-row p-4">
+                            <div class="input-group m-2">
+                                <span class="input-group-text">Fecha de inicio:</span>
+                                <input type="text" class="form-control" placeholder="dd/mm" [(ngModel)]="fechaInicio">
+                            </div>
+                            <div class="input-group m-2">
+                                <span class="input-group-text">Fecha de fin:</span>
+                                <input type="text" class="form-control" placeholder="dd/mm" [(ngModel)]="fechaFin">
+                            </div>
+                        </div>
+                        <button class="btn btn-success mx-auto m-4 btn-lg" (click)="filtrarTurnosPorRango( fechaInicio, fechaFin)">OK</button>
+                    }
+                    @if(secuencia4[1])
+                    {
+                        @if (!graficoParaPDF) 
+                        {
+
+                            <div class="chart-wrapper">
+                                <div class="chart-container">
+                                    <ngx-charts-gauge
+                                    [scheme]="colorScheme"
+                                    [results]="data4"
+                                    [legend]="true"
+                                    [legendPosition]="legendPosition"
+                                    [legendTitle]="'Especialistas'"
+                                    (select)="onSelect($event)"
+                                    (activate)="onActivate($event)"
+                                    (deactivate)="onDeactivate($event)"
+                                    [max]="30"
+                                    >
+                                </ngx-charts-gauge>
+                            </div>
+                        </div>
+                    }
+                    @else {
+                        <div class="chart-wrapper mx-auto">
+                            <div class="chart-container">
+                                <ngx-charts-tree-map
+                                [view]="[800,500]"
+                                [scheme]="colorScheme"
+                                [results]="data4"
+                                [animations]="true"
+                                (select)="onSelect($event)">
+                                </ngx-charts-tree-map>
+                            </div>
+                        </div>
+                    }
+                    }
+                }
+                <!-- Cantidad de turnos finalizados -->
+                @if (opcionSeleccionada == '5') 
+                {
+                    @if (secuencia5[0])
+                    {
+                        <h1 class="text-center m-2">Seleccione un lapso de tiempo</h1>
+                        <div class="card m-4 d-flex flex-row p-4">
+                            <div class="input-group m-2">
+                                <span class="input-group-text">Fecha de inicio:</span>
+                                <input type="text" class="form-control" placeholder="dd/mm" [(ngModel)]="fechaInicio">
+                            </div>
+                            <div class="input-group m-2">
+                                <span class="input-group-text">Fecha de fin:</span>
+                                <input type="text" class="form-control" placeholder="dd/mm" [(ngModel)]="fechaFin">
+                            </div>
+                        </div>
+                        <button class="btn btn-success mx-auto m-4 btn-lg" (click)="filtrarTurnosTerminadosPorRango( fechaInicio, fechaFin)">OK</button>
+                    }
+                    @if(secuencia5[1])
+                    {
+                        @if (!graficoParaPDF) 
+                        {
+
+                            <div class="chart-wrapper">
+                                <div class="chart-container">
+                                    <ngx-charts-gauge
+                                    [scheme]="colorScheme"
+                                    [results]="data5"
+                                    [legend]="true"
+                                    [legendPosition]="legendPosition"
+                                    [legendTitle]="'Especialistas'"
+                                    (select)="onSelect($event)"
+                                    (activate)="onActivate($event)"
+                                    (deactivate)="onDeactivate($event)"
+                                    [max]="30"
+                                    >
+                                </ngx-charts-gauge>
+                            </div>
+                        </div>
+                    }
+                    @else {
+                        <div class="chart-wrapper mx-auto">
+                            <div class="chart-container">
+                                <ngx-charts-tree-map
+                                [view]="[800,500]"
+                                [scheme]="colorScheme"
+                                [results]="data5"
+                                [animations]="true"
+                                (select)="onSelect($event)">
+                                </ngx-charts-tree-map>
+                            </div>
+                        </div>
+                    }
+                    }
+                }    
+            }
+            @else 
+            {
+                <div class="card bg-primary p-3 m-4">
+                    <h3 class="text-center">Por favor, seleccione una opción</h3>
+                </div>
+            }
+        </div>
+        
+    </div>
+</div>

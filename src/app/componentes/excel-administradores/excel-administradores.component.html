@@ -1,0 +1,36 @@
+<app-spinner [ngClass]="claseSpinner"></app-spinner>
+
+@if (administradores)
+{
+<button class="btn btn-success btn-g mx-auto m-4 w-25" (click)="descargarExcel()">Descargar Excel</button>
+<div class="card m-4">
+
+    <div class="table-responsive">
+        
+        <table class="table table-striped" id="table-data">
+            <thead>
+                <tr>
+                    <th scope="col">DNI</th>
+                    <th scope="col">Nombre</th>
+                    <th scope="col">Apellido</th>
+                    <th scope="col">Edad</th>
+                    <th scope="col">Mail</th>
+                </tr>
+            </thead>
+            <tbody class="table-group-divider">
+                @for (administrador of administradores; track $index){
+                    <tr>
+                        <th scope="row">{{administrador.dni}}</th>
+                        <td>{{administrador.nombre}}</td>
+                        <td>{{administrador.apellido}}</td>
+                        <td>{{administrador.edad}}</td>
+                        <td>{{administrador.mail}}</td>
+                        
+                        <td></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+}

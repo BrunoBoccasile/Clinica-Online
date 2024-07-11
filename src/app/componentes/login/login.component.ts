@@ -8,11 +8,14 @@ import { SweetAlert } from '../../clases/sweetAlert';
 import { SpinnerComponent } from '../spinner/spinner.component';
 import { StorageService } from '../../servicios/storage.service';
 import { NgClass } from '@angular/common';
+import { LogsService } from '../../servicios/logs.service';
+import { Tiempo } from '../../clases/tiempo';
+import { AutoFocusDirective } from '../../directives/auto-focus.directive';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [ReactiveFormsModule, SpinnerComponent, NgClass],
+  imports: [ReactiveFormsModule, SpinnerComponent, NgClass, AutoFocusDirective],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
 })
@@ -30,8 +33,8 @@ export class LoginComponent implements OnInit
   ];
   imagenesBotonesObtenidas = false;
   claseSpinner = "spinner-desactivado";
-
-  constructor(private fb: FormBuilder, protected authService: AuthService, public router: Router, public storageService: StorageService) { }
+  tiempo: Tiempo = new Tiempo();
+  constructor(public logsService: LogsService, private fb: FormBuilder, protected authService: AuthService, public router: Router, public storageService: StorageService) { }
   ngOnInit(): void
   {
     this.formLogin = this.fb.group({
@@ -75,13 +78,17 @@ export class LoginComponent implements OnInit
         if(response.user.emailVerified == false)
           {
             this.authService.LogOut();
-            this.swal.mostrarMensajeWarning("Mail no verificado", "Para iniciar sesión con esta cuenta, debe verificar su email. Por favor revise su bandeja de entrada.")
+            this.swal.mostrarMensajeWarning("Mail no verificado", "Para iniciar sesión con esta cuenta, debe verificar su email. Por favor revise su bandeja de entrada.");
             this.ocultarSpinner();
           }
           else
           {
             console.log(response);
-            this.swal.mostrarMensajeExitoYNavegar("Sesión iniciada", "Serás redirigido a la página de bienvenida", "bienvenida")
+            let log = {
+              email: this.user?.value
+            }
+            this.logsService.guardarLog(log);
+            this.swal.mostrarMensajeExitoYNavegar("Sesión iniciada", "Serás redirigido a la página de bienvenida", "bienvenida");
             this.ocultarSpinner();
           }
       }).catch((error) =>

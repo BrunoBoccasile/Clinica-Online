@@ -9,7 +9,7 @@ import { NgClass } from '@angular/common';
 import { SpinnerComponent } from '../spinner/spinner.component';
 import { CapitalizePipePipe } from '../../pipes/capitalize-pipe.pipe';
 import { MinutosAHoraPipePipe } from '../../pipes/minutos-a-hora-pipe.pipe';
-import { jsPDF } from 'jspdf';
+import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 
 @Component({

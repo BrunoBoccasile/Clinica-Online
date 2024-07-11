@@ -24,16 +24,21 @@ import { NgClass } from '@angular/common';
 import { getDownloadURL } from '@angular/fire/storage';
 import { TurnosService } from '../../servicios/turnos.service';
 import { CapitalizePipePipe } from '../../pipes/capitalize-pipe.pipe';
+import { Tiempo } from '../../clases/tiempo';
+import * as XLSX from 'xlsx';
+import { MinutosAHoraPipePipe } from '../../pipes/minutos-a-hora-pipe.pipe';
+import { FechaBarraAGuionPipe } from '../../pipes/fecha-barra-aguion-pipe.pipe';
 
 @Component({
   selector: 'app-gestion-usuarios',
   standalone: true,
-  imports: [TablaPacientesComponent, TablaEspecialistasComponent, ReactiveFormsModule, SpinnerComponent, TablaAdministradoresComponent, NgClass, CapitalizePipePipe],
+  imports: [FechaBarraAGuionPipe, MinutosAHoraPipePipe, TablaPacientesComponent, TablaEspecialistasComponent, ReactiveFormsModule, SpinnerComponent, TablaAdministradoresComponent, NgClass, CapitalizePipePipe],
   templateUrl: './gestion-usuarios.component.html',
   styleUrl: './gestion-usuarios.component.css'
 })
 export class GestionUsuariosComponent implements OnInit, OnDestroy
 {
+  tiempo: Tiempo = new Tiempo();
   idEspecialistaSeleccionado: string;
   idPacienteSeleccionado: string;
   idAdministradorSeleccionado: string;
@@ -66,6 +71,9 @@ export class GestionUsuariosComponent implements OnInit, OnDestroy
   claseSpinner = "spinner-desactivado";
   suscripcionTurnos!: Subscription;
   turnosPaciente!: Array<any>;
+  suscripcionPacientes!: Subscription;
+  pacientes!: Paciente[];
+
   constructor(public turnosService: TurnosService, public administradoresService: AdministradoresService, public especialidadesService: EspecialidadesService, public fb: FormBuilder, public especialistasService: EspecialistasService, public authService: AuthService, public router: Router, public storageService: StorageService, public pacientesService: PacientesService)
   {
     this.imagen1PacienteSeleccionado = "";
@@ -89,6 +97,13 @@ export class GestionUsuariosComponent implements OnInit, OnDestroy
   }
   ngOnInit(): void
   {
+    this.pacientesService.getPacientes().subscribe({
+      next: (res) =>
+      {
+        this.pacientes = res;
+      }
+    })
+
     this.formPaciente = this.fb.group({
       dni: ['', [Validators.min(1000000), Validators.required]],
       nombre: ['', [Validators.pattern("^[A-Za-zÁÉÍÓÚáéíóúÑñÜü -]{1,50}$"), Validators.required]],
@@ -141,9 +156,13 @@ export class GestionUsuariosComponent implements OnInit, OnDestroy
 
   ngOnDestroy(): void
   {
-    if(this.suscripcionTurnos)
+    if (this.suscripcionTurnos)
     {
       this.suscripcionTurnos.unsubscribe();
+    }
+    if (this.suscripcionPacientes)
+    {
+      this.suscripcionPacientes.unsubscribe();
     }
   }
   mostrarSpinner()
@@ -154,6 +173,11 @@ export class GestionUsuariosComponent implements OnInit, OnDestroy
   ocultarSpinner()
   {
     this.claseSpinner = "spinner-desactivado";
+  }
+
+  irADescargarExcel(ruta: string)
+  {
+    window.open(ruta);
   }
 
   recibirIdEspecialista(id: string)
@@ -228,9 +252,37 @@ export class GestionUsuariosComponent implements OnInit, OnDestroy
     this.mostrarModalPacienteSeleccionado();
   }
 
-  objectKeys(obj: any) {
+  descargarExcelPaciente(dniPaciente: any)
+  {
+    console.log(this.turnosPaciente);
+    // let data = [];
+    // for (let i = 0; i < this.turnosPaciente.length; i++)
+    // {
+    //   data.push((
+    //     {
+    //       especialidad: this.turnosPaciente[i].especialidad,
+    //       nombreEspecialista: this.turnosPaciente[i].nombreEspecialista,
+    //       apellidoEspecialista: this.turnosPaciente[i].apellidoEspecialista,
+    //       estado: this.turnosPaciente[i].estado,
+    //       fecha: this.turnosPaciente[i].fecha,
+    //       hora:  this.tiempo.minutosAHora(this.turnosPaciente[i].hora)
+    //     }
+    //   ))
+    // }
+    // console.log(data);
+    let data = document.getElementById('table-data');
+    const ws: XLSX.WorkSheet = XLSX.utils.table_to_sheet(data,{ raw: true });
+
+    const wb: XLSX.WorkBook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+
+    XLSX.writeFile(wb, `turnos-paciente-${dniPaciente}.xlsx`);
+  }
+
+  objectKeys(obj: any)
+  {
     return Object.keys(obj);
-}
+  }
 
   mostrarModalEspecialistaSeleccionado()
   {
@@ -247,15 +299,17 @@ export class GestionUsuariosComponent implements OnInit, OnDestroy
   mostrarModalPacienteSeleccionado()
   {
     this.mostrarSpinner();
-    if(this.suscripcionTurnos)
+    if (this.suscripcionTurnos)
     {
       this.suscripcionTurnos.unsubscribe();
     }
     this.suscripcionTurnos = this.turnosService.obtenerTurnosByField('idPaciente', this.idPacienteSeleccionado).subscribe({
-      next: (res) => {
+      next: (res) =>
+      {
         this.turnosPaciente = res;
         this.ocultarSpinner();
-      }})
+      }
+    })
     const modal: any = new Modal(this.modalPacienteSeleccionado.nativeElement);
     modal.show();
 
@@ -461,7 +515,8 @@ export class GestionUsuariosComponent implements OnInit, OnDestroy
           promesasGetDownloadUrl.push(getDownloadURL(uploadResult1.ref));
           promesasGetDownloadUrl.push(getDownloadURL(uploadResult2.ref));
 
-          Promise.all(promesasGetDownloadUrl).then((urlImagenes) => {
+          Promise.all(promesasGetDownloadUrl).then((urlImagenes) =>
+          {
             const [urlImagen1, urlImagen2] = urlImagenes;
             let paciente: Paciente = {
               dni: this.dniPaciente?.value,
@@ -483,7 +538,7 @@ export class GestionUsuariosComponent implements OnInit, OnDestroy
             this.formPaciente.reset();
             this.formEspecialista.reset();
           })
-            
+
 
         }).catch(error =>
         {

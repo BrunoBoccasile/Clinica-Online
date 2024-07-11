@@ -10,11 +10,12 @@ import { Tiempo } from '../../clases/tiempo';
 import { MinutosAHoraPipePipe } from '../../pipes/minutos-a-hora-pipe.pipe';
 import { Modal } from 'bootstrap';
 import { CapitalizePipePipe } from '../../pipes/capitalize-pipe.pipe';
+import { HighlightOnHoverDirective } from '../../directives/highlight-on-hover.directive';
 
 @Component({
   selector: 'app-pacientes',
   standalone: true,
-  imports: [SpinnerComponent, NgClass, MinutosAHoraPipePipe, CapitalizePipePipe],
+  imports: [SpinnerComponent, NgClass, MinutosAHoraPipePipe, CapitalizePipePipe, HighlightOnHoverDirective],
   templateUrl: './pacientes.component.html',
   styleUrl: './pacientes.component.css'
 })

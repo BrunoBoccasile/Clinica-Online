@@ -1,14 +1,67 @@
 <app-spinner [ngClass]="claseSpinner"></app-spinner>
 
+<div class="fab-container" style="overflow-y: auto; max-height: 1000px;">
+  @if (pacientes) 
+  {
+
+    @for (paciente of pacientes; track $index) 
+    {
+      <div class="d-flex flex-row">
+        @if(paciente.id)
+        {
+
+          <button (click)="recibirIdPaciente(paciente.id)" class="fab-button p-1 m-1" style="height: 80px; width: 80px;">
+            <img class="w-100 h-100 rounded-circle" src={{paciente.urlImagen1}}>
+          </button>
+          <p class="my-auto">{{paciente.nombre}}<br> {{paciente.apellido}}</p>
+        }
+        </div>
+    }
+  }
+  </div>
+  <!-- <button class="btn rounded-circle btn-redondo p-2 m-2" (click)="seleccionarEspecialista(especialista)">
+    @if(especialista.imagen)
+    {
+            <img  class="w-100 h-100  rounded-circle" src={{especialista.imagen}}>
+        }
+        @else {
+            <app-spinner class="w-100 h-100 rounded-circle"></app-spinner>
+        }
+    </button>
+    <h3>{{especialista.nombre}} {{especialista.apellido}}</h3>
+</div> -->
+
+
+<div class="col-12 col-md-4 mx-auto">
+  <div class="card p-2 bg-dark m-4 mx-auto">
+    <div class="card-title">
+      <h3 class="text-center text-white">Descargar Excel</h3>
+    </div>
+    <div class="btn-group mb-4" role="group">
+      <input type="radio" class="btn-check" name="btnradio" autocomplete="off">
+      <label class="btn btn-outline-success" (click)="irADescargarExcel('excel-pacientes')">Pacientes</label>
+      
+      <input type="radio" class="btn-check" name="btnradio" autocomplete="off">
+      <label class="btn btn-outline-success"
+      (click)="irADescargarExcel('excel-especialistas')">Especialistas</label>
+      
+      <input type="radio" class="btn-check" name="btnradio"autocomplete="off">
+      <label class="btn btn-outline-success"
+      (click)="irADescargarExcel('excel-administradores')">Administradores</label>
+    </div>
+  </div>
+</div>
+
+
 <div class="d-flex flex-column align-items-center col-12">
 <div class="col-12 col-md-8">
-    <div class="card my-4">
+    <!-- <div class="card my-4">
       <div class="card-body">
         <h5 class="card-title">Pacientes</h5>
         <h6 class="card-subtitle mb-2 text-muted">Listado</h6>
         <app-tabla-pacientes [tipoVista]="1" (onEnviarId)="recibirIdPaciente($event)"></app-tabla-pacientes>
       </div>
-    </div>
+    </div> -->
 
     <div class="card my-4 ">
       <div class="card-body">
@@ -450,8 +503,11 @@
             }
     </div>
       <div class="modal-footer">
-
-      </div>
+        @if (turnosPaciente.length > 0) 
+        {
+          <input type="button" class="btn btn-success" value="Descargar Excel" (click)="descargarExcelPaciente(pacienteSeleccionado?.dni)">
+        }
+        </div>
       }
       @else {
       <app-spinner></app-spinner>
@@ -549,3 +605,31 @@
     </div>
   </div>
 </div>
+
+@if(turnosPaciente)
+{
+  <table class="table table-striped" id="table-data" style="display: none;">
+    <thead>
+      <tr>
+        <th scope="col">Especialidad</th>
+        <th scope="col">Nombre especialista</th>
+        <th scope="col">Apellido especialista</th>
+        <th scope="col">Estado</th>
+        <th scope="col">Fecha</th>
+        <th scope="col">Hora</th>
+      </tr>
+    </thead>
+    <tbody class="table-group-divider">
+      @for (turno of turnosPaciente; track $index){
+        <tr>
+          <th scope="row">{{turno.especialidad}}</th>
+          <td>{{turno.nombreEspecialista}}</td>
+          <td>{{turno.apellidoEspecialista}}</td>
+          <td>{{turno.estado}}</td>
+          <td>{{turno.fecha}}</td>
+          <td>{{turno.hora | minutosAHoraPipe}}</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+}

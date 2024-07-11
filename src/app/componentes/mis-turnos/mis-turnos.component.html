@@ -135,8 +135,8 @@
                     {
                     @for (turno of turnos; track $index)
                     {
-                    <tr (click)="mostrarModalAccionesTurno(turno)" role="button">
-                        <td>{{turno.especialidad}}</td>
+                    <tr (click)="mostrarModalAccionesTurno(turno)" role="button" >
+                        <td >{{turno.especialidad}}</td>
                         <td *ngIf="authService.tipoUsuario == 'paciente' || authService.tipoUsuario =='administrador'">
                             {{turno.nombreEspecialista + " " + turno.apellidoEspecialista}}</td>
                         <td
@@ -144,7 +144,7 @@
                             {{turno.nombrePaciente + " " + turno.apellidoPaciente}}</td>
                         <td>{{turno.fecha}}</td>
                         <td>{{turno.hora | minutosAHoraPipe}}</td>
-                        <td>{{turno.estado}}</td>
+                        <td [appEstadoTurno]="turno.estado">{{turno.estado}}</td>
                     </tr>
                     }
                     }
@@ -294,7 +294,7 @@
                     <textarea class="form-control" rows="3" placeholder="Motivos*"
                     [(ngModel)]="motivosRechazo"></textarea>
                     <button class="btn btn-dark text-white my-2" data-bs-dismiss="modal"
-                    (click)="rechazarTurno()">Rechazar turno</button>
+                    (click)="rechazarTurno()" [disabled]="!motivosRechazo">Rechazar turno</button>
                 </div>
                 }
 
